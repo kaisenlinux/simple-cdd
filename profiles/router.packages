@@ -1,0 +1,7 @@
+arno-iptables-firewall
+dnsmasq
+bridge-utils
+
+# Install dbus, which is required when systemd is used:
+# https://bugs.debian.org/776530
+dbus

@@ -1,0 +1,34 @@
+# Default repository information (don't include codename data, d-i figures it
+# out from what's available in the ISO)
+d-i mirror/country string enter information manually
+d-i mirror/http/hostname string deb.kaisenlinux.org
+d-i mirror/http/directory string /
+# Disable security, updates and backports
+d-i apt-setup/services-select multiselect
+# Enable contrib and non-free
+d-i apt-setup/non-free boolean true
+d-i apt-setup/contrib boolean true
+# Disable CDROM entries after install
+d-i apt-setup/disable-cdrom-entries boolean true
+# Upgrade installed packages
+d-i pkgsel/upgrade select full-upgrade
+# Disable question about automatic security updates
+d-i pkgsel/update-policy select none
+# Disable popularity-contest
+popularity-contest popularity-contest/participate boolean false
+# Disable question about extra media
+d-i apt-setup/cdrom/set-first boolean false
+#Do not ask to create a root password to force the creation of a user with reduced privileges
+d-i passwd/root-login boolean false
+#Define default filesystem
+d-i partman/default_filesystem string btrfs
+#Do not activate volume wipe during encryption
+d-i partman-auto-crypto/erase_disks boolean false
+#Activate eatmydata to reduce space disk used
+d-i preseed/early_command string anna-install eatmydata-udeb
+#Automatically use APT mirror
+d-i apt-setup/use_mirror boolean true
+#Delete the message at end installation and automatic reboot after finish install
+d-i finish-install/reboot_in_progress note
+#Execute at command after system installation
+#d-i preseed/late_command string in-target sh -c ''

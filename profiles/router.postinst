@@ -1,0 +1,22 @@
+#!/bin/sh
+
+cat <<EOF >> /etc/dnsmasq.conf
+
+# configure dnsmasq to serve DHCP
+dhcp-range=192.168.99.20,192.168.99.250,1h
+
+EOF
+
+# configure a bridge, with comments of how to add other interfaces
+cat << EOF >> /etc/network/interfaces
+
+# Bridge configured for internal network
+auto br0
+iface br0 inet static
+address 192.168.99.1
+netmask 255.255.255.0
+bridge_ports none
+# Configure with internal network interfaces:
+# bridge_ports eth1 eth2 eth3
+
+EOF

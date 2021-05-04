@@ -1,0 +1,40 @@
+update README (mostly done) and FAQ
+
+make --local-packages handling a mirror-tools method
+
+explore debian-installer's "auto" mode for use with simple-cdd
+
+include debian-live images with live-helper
+
+debian-installer network boot method (instead of CD)
+
+explore using .disk/udeb_include instead of preseeding to load
+simple-cdd-profiles udeb
+
+build-simple-cdd:
+  support arbitrary number of additional mirrors
+  commandline options to:
+    define working dir:
+      profiles dir, simple-cdd.conf, checkpackages, etc
+    point to profiles dir
+    point to simple-cdd.conf
+    add debconf preseed file
+  set SECURITY even if do_mirror=false
+    
+dynamically tweak default.preseed 
+  with a preseed/include, and add modifications to the included preseed
+  directly
+
+re-building with an existing debian-installer .iso
+  see buildcd script from debian-edu (look for isoinfo):
+    svn://svn.debian.org/svn/debian-edu/trunk/src/build/CD
+
+write a debconf pre-seeding sanitizer:
+  document questions that cause problems when preseeded:
+    base-config    base-config/main-menu
+    base-config    base-config/late_command
+    base-config    base-config/early_command
+    base-config    apt-setup/uri_type
+    d-i    debconf/priority
+    debconf       debconf/priority
+    xserver-xfree86 (many hardware-specific ones)

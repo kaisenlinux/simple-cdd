@@ -1,0 +1,64 @@
+conf=$MIRROR/conf
+
+# attempt to resolve dependencies
+test -z "$reprepro_retries" && reprepro_retries="20"
+package_lists=""
+for a in $ARCHES ; do
+    for component in $mirror_components ; do
+        package_lists="$package_lists $MIRROR/dists/$CODENAME/$component/binary-$a/Packages"
+        upstream_package_lists="$upstream_package_lists $MIRROR/lists/default_${CODENAME}_${component}_${a}_Packages"
+    done
+done
+
+mytmpdir=$(mktemp -d)
+trap "rm -rf $mytmpdir" EXIT
+
+# get a list of provides
+grep --no-filename ^Provides $upstream_package_lists | cut -d : -f 2- | tr ',' '\n' | perl -np -e 's/\s+\(.*\)//; s/^\s*//' | sort -u >$mytmpdir/provides
+
+for i in $(seq $reprepro_retries); do
+    cp $conf/package-list $conf/package-list.old
+
+    dependencies="$(awk -F Depends: '/Depends:/{print $2}' $package_lists | tr '|,' '\n' | awk '{print $1}' | sed -e 's/:any//' | sort -u)"
+    if [ "$NORECOMMENDS" != "1" ]; then
+        recommends="$(awk -F Recommends: '/Recommends:/{print $2}' $package_lists | tr '|,' '\n' | awk '{print $1}' | sed -e 's/:any//' | sort -u)"
+    else
+        recommends=""
+    fi
+
+    for p in $all_packages $dependencies ; do
+        echo $p
+    done > $mytmpdir/packages
+    provide_dependencies=$(providecheck "$mytmpdir/provides" "$mytmpdir/packages" | sort -u)
+    if [ -n "$provide_dependencies" ]; then
+        for p in $provide_dependencies ; do
+            # see if a package already satisfies the provides
+            satisfies="$(grep-dctrl -n --show-field Package --field Provides --field Package $p $package_lists || true)"
+            if [ -z "$satisfies" ]; then
+                # search for other packages that provide the desired features
+                providers=$(grep-dctrl -n --show-field Package --field Provides $p $upstream_package_lists || true)
+                if [ -z "$providers" ]; then
+                    echo "failed to find a package providing the virtual package '$p'"
+                    exit 1
+                fi
+                dependencies="$dependencies $providers"
+            fi
+        done
+    fi
+
+    for p in $dependencies $recommends $all_packages ; do
+        echo $p install 
+    done | sort -u > $conf/package-list
+
+    if diff -q $conf/package-list $conf/package-list.old ; then
+        echo "no new dependencies, finished in $i attempts."
+        break
+    else
+        echo "getting missing dependencies... attempt $i"
+        if ! reprepro $reprepro_opts --nolistsdownload --noskipold update ; then
+            ret=$?
+            echo "reprepro failed with exit code: $ret"
+            exit 1
+        fi
+    fi
+done

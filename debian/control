@@ -1,0 +1,68 @@
+Source: simple-cdd
+Section: misc
+Priority: optional
+Maintainer: Simple-CDD Developers <simple-cdd@packages.debian.org>
+Uploaders: Vagrant Cascadian <vagrant@debian.org>
+Build-Depends: debhelper-compat (= 13),
+ distro-info-data,
+ python3,
+ python3-debian,
+ python3-setuptools,
+ dh-python,
+ help2man,
+Standards-Version: 4.5.1
+Rules-Requires-Root: no
+Vcs-Git: https://salsa.debian.org/debian/simple-cdd.git
+Vcs-Browser: https://salsa.debian.org/debian/simple-cdd
+
+Package: simple-cdd
+Architecture: all
+Depends: ${misc:Depends},
+ rsync,
+ debian-cd (>= 3.1.15),
+ reprepro,
+ wget,
+ lsb-release,
+ dctrl-tools,
+ python3,
+ python3-simple-cdd,
+Recommends: dose-distcheck
+Suggests: qemu-system | qemu-kvm
+Description: create customized debian-installer CDs
+ Simple-CDD is a limited though relatively easy tool to create a
+ customized debian-installer CD.
+ .
+ It includes simple mechanisms to create "profiles" that define common
+ system configurations, which can be selected during system
+ installation. Simple-CDD also makes it easy to build CDs with
+ language and country settings pre-configured.
+ .
+ This can be used to create a crude "Custom Debian Distribution" using
+ packages from Debian, with pre-configuration of packages that use
+ debconf.  Custom configuration scripts can be specified to handle
+ packages that don't support debconf pre-configuration.
+ .
+ Testing CD images with qemu is also made simple with a provided
+ script.
+
+Package: python3-simple-cdd
+Architecture: all
+Section: python
+Depends: ${misc:Depends},
+ python3,
+ python3-debian,
+Recommends: python3-yaml
+Description: python3 modules for Simple-CDD
+ Simple-CDD is a limited though relatively easy tool to create a
+ customized debian-installer CD.
+ .
+ This package includes functions used by simple-cdd to manage the
+ environment, manage GPG keys, configure and run reprepro, configure
+ and run debian-cd.
+
+Package: simple-cdd-profiles
+Section: debian-installer
+Architecture: all
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: simple-cdd profile selection
+Package-Type: udeb

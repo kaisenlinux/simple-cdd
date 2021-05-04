@@ -1,0 +1,712 @@
+#!/usr/bin/env python3
+#coding: utf-8
+# Copyright 2004-2007 Vagrant Cascadian <vagrant@freegeek.org>.  Licensed under
+# the terms of the GNU General Public License, version 2 or any later version.
+
+import subprocess
+import tempfile
+import argparse
+import os
+import re
+import sys
+import shutil
+import logging
+import shlex
+import io
+import curses
+import glob
+from simple_cdd.env import Environment
+from simple_cdd.variables import VARIABLES
+from simple_cdd.log import FancyTerminalHandler
+from simple_cdd.exceptions import Fail
+from simple_cdd.tools import Tool
+from simple_cdd.utils import run_command, verify_preseed_file, shell_quote, shell_which
+from simple_cdd.gnupg import Gnupg
+from urllib.parse import urlparse, urljoin
+
+
+class SimpleCDD:
+    def __init__(self, args):
+        """
+        Set defaults
+        """
+        # Create the environment that we are going to work on
+        self.env = Environment(VARIABLES)
+        self.args = args
+
+    def setup_logging(self):
+        """
+        Set up logging
+        """
+        # Get the root logger
+        log = logging.getLogger()
+
+        self.has_fancyterm = False
+        if not args.debug and sys.stderr.isatty():
+            curses.setupterm()
+            if curses.tigetnum("colors") > 0:
+                self.has_fancyterm = True
+
+        plain_format_string = "%(asctime)-15s %(levelname)s %(message)s"
+
+        if args.logfile:
+            handler = logging.FileHandler(args.logfile, "w")
+            handler.setFormatter(logging.Formatter(plain_format_string))
+            handler.setLevel(logging.DEBUG)
+            log.addHandler(handler)
+
+        def level_for_args(args):
+            if args.debug:
+                return logging.DEBUG
+            elif args.verbose:
+                return logging.INFO
+            elif args.quiet:
+                return logging.ERROR
+            else:
+                return logging.WARN
+
+        self.fancy_handler = None
+        if self.has_fancyterm:
+            handler = FancyTerminalHandler(sys.stderr)
+            handler.non_progress = level_for_args(args)
+            self.fancy_handler = handler
+        else:
+            handler = logging.StreamHandler(sys.stderr)
+            handler.setFormatter(logging.Formatter("%(asctime)-15s %(levelname)s %(message)s"))
+            handler.setLevel(level_for_args(args))
+        log.addHandler(handler)
+
+        log.setLevel(logging.DEBUG)
+
+    def shutdown_logging(self):
+        if self.fancy_handler:
+            self.fancy_handler.finish_logging()
+
+    def get_debversion(self, codename):
+        """
+        Parse information from distro-info and return matching version.
+        """
+        import csv
+        with open('/usr/share/distro-info/debian.csv', newline='') as f:
+            reader = csv.reader(f)
+            for version, fullname, name, *other in reader:
+                if name == codename:
+                    return version
+        return "unknown"
+
+    def read_configuration(self):
+        """
+        Read initial configuration from environment and command line
+        """
+        # Read configuration files into the environment
+        if args.conf:
+           self.env.read_config_file(args.conf)
+
+        # Read command line options
+        self.env.parse_commandline(self.args)
+
+        # Tweak the environment for non-straightforward command line options
+        # and other corner cases
+        if self.args.dvd: self.env.set("DISKTYPE", "DVD")
+        if self.args.do_mirror: self.env.set("do_mirror", True)
+        if self.args.no_do_mirror: self.env.set("do_mirror", False)
+
+        # Program specific env variables
+        self.env.set("REPREPRO_BASE_DIR", self.env.get("simple_cdd_mirror"))
+        self.env.set("TDIR", os.path.join(self.env.get("simple_cdd_temp"), "cd-build"))
+        self.env.set("APTTMP", os.path.join(self.env.get("TDIR"), "apt"))
+        self.env.set("CONTRIB", "")
+        self.env.set("NONFREE", "")
+
+        # Have build profiles over-ride all others
+        for p in ["default"] + self.env.get("profiles") + self.env.get("build_profiles"):
+            for pathname in self.find_profile_files(p + ".conf"):
+                self.env.read_config_file(pathname)
+
+        # Disable security and updates mirrors for sid, as they do not exist.
+        if self.env.get("CODENAME") == "sid":
+            if self.env.get("security_mirror"):
+                log.info("Disabling security mirror for sid.")
+                self.env.set("security_mirror", "")
+            if self.env.get("updates_mirror"):
+                log.info("Disabling updates mirror for sid.")
+                self.env.set("updates_mirror", "")
+            if not self.env.get("DEBVERSION"):
+                self.env.set("DEBVERSION", "unstable")
+
+        # Set DEBVERSION based on CODENAME
+        if not self.env.get("DEBVERSION"):
+            self.env.set("DEBVERSION", self.get_debversion(self.env.get("CODENAME")))
+
+        # Set defaults for debian-cd CONTRIB and NONFREE variables based on configured mirror components.
+        for component in self.env.get("mirror_components") + self.env.get("mirror_components_extra"):
+            if component == "contrib": self.env.set("CONTRIB", "1")
+            if component == "non-free": self.env.set("NONFREE", "1")
+
+        # Include package and preseed files for profiles
+        for p in ["default"] + self.env.get("profiles") + self.env.get("build_profiles"):
+            self.env.append("preseed_files", self.find_profile_files("{}.preseed".format(p)))
+            self.env.append("package_files", self.find_profile_files("{}.packages".format(p)))
+            self.env.append("package_files", self.find_profile_files("{}.downloads".format(p)))
+            self.env.append("package_files", self.find_profile_files("{}.udebs".format(p)))
+            self.env.append("all_extras", self.find_profile_files("{}.postinst".format(p)))
+            self.env.append("all_extras", self.find_profile_files("{}.conf".format(p)))
+            for pathname in self.find_profile_files("{}.extra".format(p)):
+                # include the extra file itself, as well as the contents it references
+                self.env.append("all_extras", pathname)
+                for f in self.read_list_file(pathname):
+                    if f[0] != '/':
+                        f = os.path.join(self.env.get("simple_cdd_dir"), f)
+                    self.env.append("all_extras", f)
+            self.env.append("exclude_files", scdd.find_profile_files("{}.excludes".format(p)))
+
+        # Create our private GPG keyring unless we have been asked to use the
+        # user's own
+        if not self.env.get("user_gnupghome"):
+            gnupghome = os.path.join(self.env.get("simple_cdd_temp"), "gpg-keyring")
+            self.env.set("GNUPGHOME", gnupghome)
+
+        # Build the list of keys used to verify signatures, if the user did not
+        # provide a custom one
+        gnupg = Gnupg(self.env)
+        verify_release_keys = self.env.get("verify_release_keys")
+        if not verify_release_keys:
+            for keyring_file in self.env.get("keyring"):
+                if not os.path.exists(keyring_file):
+                    log.warn("keyring file %s does not exist", keyring_file)
+                    continue
+
+                verify_release_keys.extend(gnupg.list_valid_keys(keyring_file))
+            self.env.set("verify_release_keys", verify_release_keys)
+
+    def check_configuration(self):
+        """
+        Run some sanity checks and warn or bail out if something is wrong
+        """
+        if "default" in self.env.get("profiles"):
+            log.info("profile 'default' is automatically included in this version of simple-cdd.")
+            log.info("to disable this message, remove it from the 'profiles' value in simple-cdd.conf")
+
+        if not self.args.force_root and os.getuid() == 0:
+            raise Fail("Running as root is strongly discouraged. please run as a non-root user.")
+
+        # # verify that preseeding files are valid
+        for p in self.env.get("preseed_files"):
+            if verify_preseed_file(p): continue
+            if self.args.force_preseed:
+                log.warn("preseed file invalid: %s", p)
+            else:
+                raise Fail("preseed file invalid: %s", p)
+
+
+    def paranoid_checks(self):
+        """
+        Run some paranoid checks. They would be a nuisance if run every time,
+        but they may be useful to run in case the program fails.
+        """
+        if not self.env.get("debian_mirror").endswith("/"):
+            log.warning("debian_mirror (%s) does not end in '/'", self.env.get("debian_mirror"))
+
+    def setup_run(self):
+        log.debug("Creating build environment in %s...", self.env.get("simple_cdd_dir"))
+        # set path to include simple-cdd dirs
+        path = os.environ["PATH"]
+        path = ":".join(self.env.get("simple_cdd_dirs") + [path])
+        self.env.set("PATH", path)
+
+        # Create working directories
+        os.makedirs(self.env.simple_cdd_dir, exist_ok=True)
+        os.makedirs(self.env.simple_cdd_temp, exist_ok=True)
+        os.makedirs(self.env.BASEDIR, exist_ok=True)
+        os.makedirs(self.env.simple_cdd_logs, exist_ok=True)
+        os.makedirs(self.env.MIRROR, exist_ok=True)
+
+        gnupg = Gnupg(self.env)
+        gnupg.init_homedir()
+
+        self.build_package_lists()
+
+
+    def build_package_lists(self):
+        """
+        Build the lists of packages that will end up in the distribution
+        """
+        if self.env.get("exclude_files"):
+            exclude = os.path.join(self.env.get("simple_cdd_temp"), "simple-cdd.excludes")
+            if os.path.exists(exclude):
+                os.rename(exclude, exclude + ".bak")
+            with open(exclude, "wt") as fd:
+                for f in self.env.get("exclude_files"):
+                    # FIXME: exclude_files is read by visiting the file system, how can
+                    #        it contain comment lines?
+                    if f.startswith("#"): continue
+                    print(f, file=fd)
+
+            # Used only by tools/build/debian-cd
+            self.env.set("EXCLUDE", exclude)
+
+        # get lists of packages from files
+        for l in self.env.get("package_files") + self.env.get("BASE_INCLUDE"):
+            self.env.append("all_packages", self.read_list_file(l))
+
+        if not self.env.get("kernel_packages"):
+            # guess appropriate kernel for architectures
+            for kernel_base in ("linux-image-", "linux-image-2.6-"):
+                for a in self.env.get("ARCHES"):
+                    if a == "alpha": self.env.append("kernel_packages", kernel_base + "alpha-generic")
+                    elif a == "armhf": self.env.append("kernel_packages", kernel_base + "armmp")
+                    elif a == "i386":
+                        if self.env.get("CODENAME") == "jessie":
+                            self.env.append("kernel_packages", kernel_base + "586")
+                        else:
+                            self.env.append("kernel_packages", kernel_base + "686")
+                    elif a == "sparc": self.env.append("kernel_packages", kernel_base + "sparc64")
+                    elif a in ("amd64", "arm64", "sparc64") or a.startswith("powerpc") or a.startswith("s390"):
+                        self.env.append("kernel_packages", kernel_base + a)
+                    else:
+                        log.warn("unable to guess kernel for architecture: {}", a)
+
+        self.env.append("all_packages", self.env.get("kernel_packages"))
+
+    def build_mirror(self):
+        """
+        Build the local mirror with all that is needed for debian-cd to build
+        the distribution
+        """
+        log.debug("Building local Debian mirror for debian-cd...")
+        if self.env.get("do_mirror"):
+            self.env.set("checksum_files", [])
+            if not self.env.get("custom_installer") and not self.env.get("DI_WWW_HOME"):
+                # add d-i files for each architecture
+                for a in self.env.get("ARCHES"):
+                    if a in ("i386", "amd64"):
+                        self.env.set("di_match_files", "/cdrom")
+                    else:
+                        self.env.set("di_match_files", ".")
+                    self.env.append("checksum_files",
+                                    os.path.join("dists", self.env.format("{DI_CODENAME}/main/installer-{a}/{di_release}/images/{checksum_file_type}", a=a)))
+            # run mirroring hooks
+            for tool in self.env.get("mirror_tools"):
+                self.run_tool("mirror", tool)
+
+        if not self.env.get("SECURITY") and self.env.get("security_mirror"):
+            pathname = os.path.join(self.env.get("MIRROR"), self.env.format("{CODENAME}-security"))
+            if os.path.isdir(pathname):
+                self.env.set("SECURITY", pathname)
+
+        if "debpartial-mirror" in self.env.get("mirror_tools") and os.path.isdir(os.path.join(self.env.get("MIRROR"), self.env.get("CODENAME"))):
+            # FIXME: better check for new-style debpartial-mirror re-location ?
+            self.env.set("MIRROR", os.path.join(self.env.get("MIRROR"), self.env.get("CODENAME")))
+            log.info("re-setting mirror for new debpartial-mirror dir: %s", self.env.get("MIRROR"))
+
+        if not os.path.isdir(self.env.get("MIRROR")):
+            raise Fail("mirror dir is not a directory: %s", self.env.get("MIRROR"))
+
+        log.debug("Checking if the mirror is complete...")
+        self.checkpackages()
+
+        log.debug("Looking for custom installer...")
+        self.get_custom_installer()
+
+    def get_custom_installer(self):
+        os.chdir(scdd.env.get("MIRROR"))
+        for a in scdd.env.get("ARCHES"):
+            current_installer = scdd.env.format("dists/{DI_CODENAME}/main/installer-{a}/current/", a=a)
+            di_dir = ""
+
+            custom_installer = scdd.env.get("custom_installer")
+            if custom_installer and os.path.isdir(os.path.join(custom_installer, "installer-{}/current/".format(a))):
+                di_dir = os.path.join(custom_installer, "installer-{}/current/".format(a))
+            elif custom_installer and os.path.isdir(os.path.join(custom_installer, a)):
+                di_dir = os.path.join(custom_installer, a)
+            elif scdd.env.get("CODENAME") != scdd.env.get("DI_CODENAME") or scdd.env.get("di_release") != "current":
+                di_dir = os.path.join("dists", scdd.env.get("DI_CODENAME"), "main", "installer-" + a, scdd.env.get("di_release"))
+
+            if os.path.isdir(di_dir):
+                log.info("using installer from: %s", di_dir)
+                os.makedirs(current_installer, exist_ok=True)
+                subprocess.check_call(["rsync", "--delete", "-aWHr", os.path.join(di_dir, "."), current_installer])
+
+    def compute_kernel_params(self):
+        if self.env.get("simple_cdd_preseed"):
+            log.debug("setting preseed file (KERNEL_PARAMS += %s)", self.env.get("simple_cdd_preseed"))
+            self.env.append("KERNEL_PARAMS", self.env.get("simple_cdd_preseed"))
+
+        if self.env.get("use_serial_console"):
+            arg = self.env.format("console={serial_console_opts}")
+            log.debug("enabling serial console hacks (KERNEL_PARAMS += %s)", arg)
+            self.env.append("KERNEL_PARAMS", arg)
+
+        if self.env.get("locale"):
+            arg = self.env.format("debian-installer/locale={locale}")
+            log.debug("setting default locale (KERNEL_PARAMS += %s)", arg)
+            self.env.append("KERNEL_PARAMS", arg)
+
+        if self.env.get("keyboard"):
+            arg = self.env.format("console-keymaps-at/keymap={keyboard}"
+                                  " keyboard-configuration/xkb-keymap={keyboard}"
+                                  " keyboard-configuration/layout={keyboard}")
+            log.debug("setting default keyboard (KERNEL_PARAMS += %s)", arg)
+            self.env.append("KERNEL_PARAMS", arg)
+
+        if self.env.get("auto_profiles"):
+            arg = "simple-cdd/profiles=" + ",".join(self.env.get("auto_profiles"))
+            log.debug("setting automatically selected profiles (KERNEL_PARAMS += %s)", arg)
+            self.env.append("KERNEL_PARAMS", arg)
+
+    def find_profile_files(self, basename):
+        """
+        Generate names of files with the given basename found in all
+        simple_cdd_dirs
+        """
+        for d in self.env.get("simple_cdd_dirs"):
+            pathname = os.path.join(d, "profiles", basename)
+            if os.path.exists(pathname):
+                yield pathname
+                break
+
+    def read_list_file(self, pathname):
+        """
+        Read lines from a file into a python list.
+
+        Skip comments and empty lines.
+        """
+        with open(pathname, "rt") as fd:
+            for line in fd:
+                line = line.strip()
+                if not line: continue
+                if line[0] == '#': continue
+                yield line
+
+    def run_tool(self, type, name):
+        """
+        Run a tool script of the given type ("build", "mirror", "testing") and
+        name
+        """
+        tool = Tool.create(self.env, type, name)
+        tool.run()
+
+    def export_var(self, name):
+        """
+        Export a member of this object in the environment
+        """
+        val = getattr(self, name)
+        if isinstance(val, list):
+            val = " ".join(val)
+        elif isinstance(val, str):
+            pass
+        elif isinstance(val, bool):
+            val = "true" if val else ""
+        elif isinstance(val, int):
+            val = str(val)
+        else:
+            raise Fail("Unknown variable type for value %s=%r", name, val)
+        log.info("export %s=%s", name, shell_quote(val))
+        os.environ[name] = val
+
+    def find_built_iso(self):
+        """
+        Find the .iso file built by debian-cd on this run
+        """
+        # First try with meaningful names
+        outdir = scdd.env.get("OUT")
+        debversion = self.env.get("DEBVERSION")
+        debversion1 = re.sub(r"[. ]", "", debversion)
+        cdname = self.env.get("CDNAME")
+        disktype = self.env.get("DISKTYPE")
+        if not cdname:
+            cdname = "debian"
+        arches = "-".join(self.env.get("ARCHES"))
+        for x in (debversion, debversion1):
+            name = "{}-{}-{}-{}-1.iso".format(cdname, x, arches, disktype)
+            pathname = os.path.join(outdir, name)
+            if os.path.exists(pathname):
+                return pathname
+
+        # Then try desperately with globbing
+        candidates = glob.glob(os.path.join(outdir, "*.iso"))
+        if len(candidates) == 1:
+            return candidates[0]
+
+        raise Fail("Cannot find built ISO in %s", outdir)
+
+
+    def checkpackages(self):
+        """
+        Check for missing packages in mirrors
+        """
+
+        # this expects three environment variables to be set:
+        # profiles: a space separated list of profiles to be included
+        # simple_cdd_dir: directory where simple-cdd is being build
+
+        # TODO: refactor with functions for duplicated code
+
+        # a space separated list of mirror locations to check
+        mirrors = [self.env.get("MIRROR"), self.env.get("SECURITY")] + self.env.get("local_packages")
+        profiles = ["default"] + self.env.get("build_profiles") + self.env.get("profiles")
+
+        # List all package names available in all mirrors
+        available_packages = set()
+        for m in mirrors:
+            if os.path.isfile(m):
+                if not m.endswith(".deb") and not m.endswith(".udeb"): continue
+                available_packages.add(re.sub(r"(?:.*/)?([^_]+).+", r"\1", m))
+            elif os.path.isdir(m):
+                for root, dirs, files in os.walk(m):
+                    for f in files:
+                        if not f.endswith(".deb") and not f.endswith(".udeb"): continue
+                        available_packages.add(re.sub(r"([^_]+).+", r"\1", f))
+
+        def check_missing_packages(packagelist, available_packages):
+            missing = []
+            for name in self.read_list_file(packagelist):
+                if name not in available_packages:
+                    missing.append(name)
+            return missing
+
+        def get_missing_packages(packagelist, alt_packagelist, available_packages):
+            if os.path.exists(packagelist):
+                return check_missing_packages(packagelist, available_packages)
+            elif os.path.exists(alt_packagelist):
+                return check_missing_packages(alt_packagelist, available_packages)
+
+        def report_missing_packages(profile, packages, packagetype):
+            msg = "missing {} packages from profile {}: {}".format(
+                    packagetype, profile, " ".join(packages))
+            if packagetype == 'required':
+                log.error("%s", msg)
+            else:
+                log.warn("%s", msg)
+
+        has_missing_packages = False
+        for profile in profiles:
+            missing_profile_packages = []
+            missing_profile_downloads = []
+            profile_base = os.path.join(self.env.get("simple_cdd_dir"), "profiles", profile)
+            alt_profile_base = os.path.join('/usr/share/simple-cdd/profiles/', profile)
+            missing_profile_packages = get_missing_packages(profile_base + '.packages', alt_profile_base + '.packages', available_packages)
+            missing_profile_downloads = get_missing_packages(profile_base + '.downloads', alt_profile_base + '.downloads', available_packages)
+            missing_profile_udebs = get_missing_packages(profile_base + '.udebs', alt_profile_base + '.udebs', available_packages)
+
+            if missing_profile_packages:
+                has_missing_packages = True
+                report_missing_packages(profile, missing_profile_packages, 'required')
+
+            if missing_profile_udebs:
+                has_missing_packages = True
+                report_missing_packages(profile, missing_profile_udebs, 'required')
+
+            if missing_profile_downloads:
+                if self.env.get("require_optional_packages"):
+                    has_missing_packages = True
+                    report_missing_packages(profile, missing_profile_downloads, "required")
+                else:
+                    report_missing_packages(profile, missing_profile_downloads, "optional")
+
+        if has_missing_packages:
+            raise Fail("stopping due to missing packages")
+
+    def run_qemu(self, isoname):
+        """
+        Run qemu to install the system and boot it.
+        """
+        # Find the qemu command to use
+        arch = self.env.get("ARCH")
+        if arch == "amd64":
+            qemu = "qemu-system-x86_64"
+        elif arch == "powerpc":
+            qemu = "qemu-system-ppc"
+        else:
+            qemu = "qemu-system-" + arch
+        qemu_bin = shell_which(qemu)
+        if qemu_bin is None:
+            raise Fail("Cannot find qemu executable %s", qemu)
+
+        qemu_opts = []
+
+        # Detect if qemu/kvm support is available.
+        if os.path.exists("/dev/kvm"):
+            qemu_opts.append("-enable-kvm")
+
+        if self.env.get("use_serial_console"):
+            qemu_opts.append("-nographic")
+
+        if self.env.get("qemu_opts"):
+            for opt in self.env.get('qemu_opts').split():
+                qemu_opts.append(opt)
+
+        # Hard disk image
+        hd_img = self.env.get("hd_img")
+        if not hd_img:
+            hd_img = "qemu-test.hd.img"
+
+        hd_size = self.env.get("hd_size")
+        if not hd_size:
+           hd_size = "4G"
+
+        if not os.path.exists(hd_img):
+            retval = run_command(
+                "creating qemu HD image",
+                ["qemu-img", "create", "-f", "qcow2", hd_img, hd_size])
+            if retval != 0:
+                raise Fail("failed to build qemu HD image")
+        qemu_opts.extend(("-drive", "if=virtio,aio=threads,cache=unsafe,file=" + hd_img))
+
+        # iso image in the virtual cdrom
+        qemu_opts.extend(("-cdrom", isoname))
+
+        # boot the cd once, then the hard drive at the next boot
+        opts = [qemu_bin] + qemu_opts + ["-boot", "once=d"]
+        log.info("Running %s", " ".join(shell_quote(x) for x in opts))
+        subprocess.call(opts)
+
+    def check_distribution(self):
+        """
+        Use dose-debcheck to check the consistency of the distribution that we just built
+        """
+        debcheck = shell_which("dose-debcheck")
+        if debcheck is None:
+            log.info("dose-debcheck not found: skipping distribution checks")
+            return
+
+        # check for missing dependencies with dose-debcheck, ignoring debian-installer files which are a little unusual
+        for a in self.env.get("ARCHES"):
+            dists_root = self.env.format("{TDIR}/{CODENAME}/CD1/dists")
+
+            def find_packages_dirs(dists_root, arch):
+                """
+                Generate the full pathnames of binary-$arch directories inside
+                dists_root
+                """
+                wanted_arch = "binary-{}".format(arch)
+                for root, dirs, files in os.walk(dists_root):
+                    try:
+                        dirs.remove("debian-installer")
+                    except ValueError:
+                        pass
+                    try:
+                        dirs.index(wanted_arch)
+                    except ValueError:
+                        continue
+                    yield os.path.join(root, wanted_arch)
+
+            packages_dirs = find_packages_dirs(dists_root, a)
+
+            for pathname in packages_dirs:
+                bg_pkgfile = [os.path.join(i, "Packages.gz") for i in packages_dirs if i != pathname]
+                bg_command = []
+
+                for file in bg_pkgfile:
+                    bg_command.append('--bg')
+                    bg_command.append(file)
+
+                command = [debcheck, "--failures", "--explain"]
+                command.extend(bg_command)
+
+                pkgfile = os.path.join(pathname, "Packages.gz")
+                if not os.path.exists(pkgfile): continue
+                command.append(pkgfile)
+                output = io.StringIO()
+                retval = run_command(
+                    "distcheck:",
+                    command,
+                    logfd=output
+                )
+                if retval != 0:
+                    output.seek(0)
+                    for line in output:
+                        if not line.startswith("stdout:"): continue
+                        log.warn("distcheck: %s", line[7:].rstrip())
+
+    def build_distribution(self):
+        """
+        Go through all the steps of building the distribution
+        """
+        log.debug("Compute kernel arguments...")
+        self.compute_kernel_params()
+
+        log.debug("Building CD image...")
+        for tool in self.env.get("build_tools"):
+            self.run_tool("build", tool)
+
+        self.check_distribution()
+
+        isoname = scdd.find_built_iso()
+        log.info("Image built in %s", isoname)
+        return isoname
+
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="create custom debian-installer CDs")
+    parser.add_argument("--logfile", action="store", help="specify a file where the full execution log will be written")
+    parser.add_argument("--quiet", action="store_true", help="quiet output on the terminal")
+    parser.add_argument("--verbose", action="store_true", help="verbose output on the terminal")
+    parser.add_argument("--debug", action="store_true", help="debugging output on the terminal")
+    parser.add_argument("--conf", action="store", help="specify a configuration file")
+    parser.add_argument("--do-mirror", action="store_true", help="generate mirror")
+    parser.add_argument("--dvd", action="store_true", help="generate dvd")
+    parser.add_argument("--no-do-mirror", action="store_true", help="do not generate mirror")
+    parser.add_argument("--qemu", "-q", action="store_true", help="use qemu to test the image")
+    parser.add_argument("--mirror-only", action="store_true", help="only generate/update the mirror")
+    parser.add_argument("--build-only", action="store_true", help="only build the ISO image")
+    parser.add_argument("--qemu-only", action="store_true", help="only test a previously built the image")
+    parser.add_argument("--force-root", action="store_true", help="allow running as root")
+    # Add more command line options from the variable description list
+    for v in VARIABLES:
+        if v.cmdline is None: continue
+        v.to_parser(parser)
+
+    args = parser.parse_args()
+
+    scdd = SimpleCDD(args)
+    scdd.setup_logging()
+    log = logging.getLogger()
+
+    try:
+        log.debug("Reading configuration...")
+        scdd.read_configuration()
+
+        log.debug("Checking configuration...")
+        scdd.check_configuration()
+
+        if args.mirror_only or args.build_only or args.qemu_only:
+            do_mirror = args.mirror_only
+            do_build = args.build_only
+            do_qemu = args.qemu_only or args.qemu
+        else:
+            do_mirror = do_build = True
+            do_qemu = args.qemu
+
+        if do_mirror or do_build:
+            scdd.setup_run()
+
+        if do_mirror:
+            scdd.build_mirror()
+
+        isoname = None
+        if do_build:
+            isoname = scdd.build_distribution()
+
+        if do_qemu:
+            if isoname is None:
+                isoname = scdd.find_built_iso()
+            log.info("Testing...")
+            scdd.run_qemu(isoname)
+
+        result = 0
+    except Fail as e:
+        #import traceback
+        #traceback.print_stack()
+        log.error(*e.args)
+        scdd.paranoid_checks()
+        result = 1
+        isoname = None
+    finally:
+        scdd.shutdown_logging()
+
+    if isoname:
+        print(isoname)
+
+    sys.exit(result)

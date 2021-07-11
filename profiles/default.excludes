@@ -3,8 +3,3 @@
 #
 # Comment out this exclude if you are building freebsd images.
 console-setup-freebsd
-
-# Exclude fuse packages to fix conflicts
-fuse-udeb
-libfuse2
-libfuse2-udeb

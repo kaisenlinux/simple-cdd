@@ -1,3 +1,10 @@
+simple-cdd (0.6.8+kaisen2) kaisen-packages; urgency=medium
+
+  * Remove postinst script
+  * Remove exceptions
+
+ -- Kevin Chevreuil - Kaisen <kaisen@kaisenlinux.org>  Sun, 11 Jul 2021 05:47:54 +0200
+
 simple-cdd (0.6.8+kaisen1) kaisen-testing; urgency=medium
 
   * Update default preseed file

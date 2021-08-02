@@ -1,0 +1,6 @@
+# tasksel is necessary for debian-cd
+tasksel
+tasksel-data
+
+# BTRFS support
+btrfs-progs

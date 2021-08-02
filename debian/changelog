@@ -1,3 +1,27 @@
+simple-cdd (0.6.8+kaisen5) kaisen-packages; urgency=medium
+
+  * Update version to apply new changes
+
+ -- Kevin Chevreuil - Kaisen <kaisen@kaisenlinux.org>  Tue, 03 Aug 2021 01:44:09 +0200
+
+simple-cdd (0.6.8+kaisen4) kaisen-packages; urgency=medium
+
+  * Remove default preseed to fix bad preseed in NETINSTALLER
+  * Remove default packages list
+  * The default preseed now install simple-cdd-profiles to install kaisen profile
+
+ -- Kevin Chevreuil - Kaisen <kaisen@kaisenlinux.org>  Tue, 03 Aug 2021 01:10:04 +0200
+
+simple-cdd (0.6.8+kaisen3) kaisen-packages; urgency=medium
+
+  * Readd default files of default profile
+  * Create kaisen profile for netinstaller
+  * Update preseed file to add select simple-cdd-profile
+    and packages debconf
+  * Create postinst script
+
+ -- Kevin Chevreuil - Kaisen <kaisen@kaisenlinux.org>  Sat, 31 Jul 2021 15:21:42 +0200
+
 simple-cdd (0.6.8+kaisen2) kaisen-packages; urgency=medium
 
   * Remove postinst script

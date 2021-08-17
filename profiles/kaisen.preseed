@@ -4,6 +4,9 @@ d-i mirror/country string enter information manually
 d-i mirror/http/hostname string deb.kaisenlinux.org
 d-i mirror/http/directory string /
 
+#Disable missing firmware message during network configuration
+d-i hw-detect/load_firmware boolean false
+
 # Disable security, updates and backports
 d-i apt-setup/services-select multiselect
 
@@ -64,3 +67,4 @@ macchanger macchanger/automatically_run boolean false
 firmware-ipw2x00 firmware-ipw2x00/license/accepted boolean true
 firmware-ivtv firmware-ivtv/license/accepted boolean true
 kaisen-kde shared/default-x-display-manager string lightdm
+virtualbox-ext-pack virtualbox-ext-pack/license boolean true

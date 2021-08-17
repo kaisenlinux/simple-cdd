@@ -1,3 +1,9 @@
+simple-cdd (0.6.8+kaisen6) kaisen-packages; urgency=medium
+
+  * Update kaisen.preseed file
+
+ -- Kevin Chevreuil - Kaisen <kaisen@kaisenlinux.org>  Tue, 17 Aug 2021 14:31:44 +0200
+
 simple-cdd (0.6.8+kaisen5) kaisen-packages; urgency=medium
 
   * Update version to apply new changes

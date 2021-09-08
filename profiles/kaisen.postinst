@@ -149,8 +149,6 @@ else
 	systemctl stop spice-webdavd.service || true
 	systemctl disable lm-sensors || true
 	systemctl stop lm-sensors || true
-	systemctl disable lockdown || true
-	systemctl stop lockdown || true
 	systemctl disable lxcfs || true
 	systemctl stop lxcfs || true
 	systemctl disable lxc-net || true

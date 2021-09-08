@@ -1,3 +1,10 @@
+simple-cdd (0.6.8+kaisen7) kaisen-packages; urgency=medium
+
+  * Remove lockdown service in kaisen.postinst script
+  * Bump Standards-Version in 4.6.0
+
+ -- Kevin Chevreuil - Kaisen <kaisen@kaisenlinux.org>  Wed, 08 Sep 2021 14:40:28 +0200
+
 simple-cdd (0.6.8+kaisen6) kaisen-packages; urgency=medium
 
   * Update kaisen.preseed file

@@ -1,3 +1,9 @@
+simple-cdd (0.6.8+kaisen8) kaisen-packages; urgency=medium
+
+  * Add podman service in profiles/kaisen.postinst script
+
+ -- Kevin Chevreuil - Kaisen <kaisen@kaisenlinux.org>  Sun, 26 Sep 2021 02:46:52 +0200
+
 simple-cdd (0.6.8+kaisen7) kaisen-packages; urgency=medium
 
   * Remove lockdown service in kaisen.postinst script

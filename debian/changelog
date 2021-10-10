@@ -1,3 +1,14 @@
+simple-cdd (0.6.8+kaisen9) kaisen-packages; urgency=medium
+
+  * Update kaisen preseed :
+    - Define https as default mirror protocol
+    - Define default deb and udeb suite
+    - Force define kaisenlinux as default hostname
+    - Force no use UTC to configure hardware clock
+    - Use automatically a NTP server to configure the system clock
+
+ -- Kevin Chevreuil - Kaisen <kaisen@kaisenlinux.org>  Sun, 10 Oct 2021 05:17:23 +0200
+
 simple-cdd (0.6.8+kaisen8) kaisen-packages; urgency=medium
 
   * Add podman service in profiles/kaisen.postinst script

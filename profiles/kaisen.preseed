@@ -1,10 +1,17 @@
 # Default repository information (don't include codename data, d-i figures it
 # out from what's available in the ISO)
-d-i mirror/country string enter information manually
-d-i mirror/http/hostname string deb.kaisenlinux.org
-d-i mirror/http/directory string /
+d-i mirror/protocol string https
+d-i mirror/country string FR    
+d-i mirror/https/hostname string deb.kaisenlinux.org
+d-i mirror/https/mirror string deb.kaisenlinux.org
+d-i mirror/https/directory string /
+d-i mirror/suite string kaisen-rolling
+d-i mirror/udeb/suite string kaisen-rolling
 
-#Disable missing firmware message during network configuration
+# Force define kaisenlinux as default hostname (priority on DHCP)
+d-i netcfg/hostname string kaisenlinux
+
+# Disable missing firmware message during network configuration
 d-i hw-detect/load_firmware boolean false
 
 # Disable security, updates and backports
@@ -29,8 +36,20 @@ popularity-contest popularity-contest/participate boolean false
 # Disable question about extra media
 d-i apt-setup/cdrom/set-first boolean false
 
-#Do not ask to create a root password to force the creation of a user with reduced privileges
+# Install default linux-image-amd64 kernel metapackage
+d-i base-installer/kernel/image string linux-image-amd64
+
+# Do not ask to create a root password to force the creation of a user with reduced privileges
 d-i passwd/root-login boolean false
+
+# Controls whether or not the hardware clock is set to UTC.
+d-i clock-setup/utc boolean false
+
+# Controls whether to use NTP to set the clock during the install
+d-i clock-setup/ntp boolean true
+
+# NTP server to use
+d-i clock-setup/ntp-server string 0.debian.pool.ntp.org
 
 #Define default filesystem
 d-i partman/default_filesystem string btrfs

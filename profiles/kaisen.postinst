@@ -3,34 +3,45 @@
 #Install complete guests for all hypervisors
 if [ -e /usr/bin/systemd-detect-virt ] && [ -x /usr/bin/systemd-detect-virt ]; then
 
-check1=$(systemd-detect-virt || true)
-check2=$(cat /sys/class/dmi/id/sys_vendor | cut -d' ' -f1)
-result1=$(echo $check1)
-result2=$(echo $check2)
+SYSTEMD_CHECK=$(systemd-detect-virt || true)
+SYS_CHECK=$(cat /sys/class/dmi/id/sys_vendor | cut -d' ' -f1)
+SYSTEMD_RESULT=$(echo $check1)
+SYS_RESULT=$(echo $check2)
 
-if [ $result1 = vmware ]; then
-	echo "Hypervisor detected: $result1. Install VMWare guest additions."
+if [ $SYSTEMD_RESULT = vmware ]; then
+	echo "Hypervisor detected: $SYSTEMD_RESULT. Install VMWare guest additions."
 	apt-get install -y open-vm-tools open-vm-tools-desktop || true
 	update-initramfs -u -k all || true
 fi
 
-if [ $result2 = innotek ]; then
-	echo "Hypervisor detected: $result2 (VirtualBox). Install all VirtualBox guest additions."
+if [ $SYS_RESULT = innotek ]; then
+	echo "Hypervisor detected: $SYS_RESULT (VirtualBox). Install all VirtualBox guest additions."
 	apt-get install -y virtualbox-guest-dkms virtualbox-guest-source virtualbox-guest-utils virtualbox-guest-x11 || true
 	update-initramfs -u -k all || true
 fi
 
-if [ $result2 = QEMU ]; then
-	echo "Hypervisor detected: $result2. Install all QEMU guest additions."
+if [ $SYS_RESULT = QEMU ]; then
+	echo "Hypervisor detected: $SYS_RESULT. Install all QEMU guest additions."
 	apt-get install -y xserver-xorg-video-qxl qemu-guest-agent spice-vdagent spice-webdavd || true
 	update-initramfs -u -k all || true
 fi
 
-if [ $result1 = microsoft ]; then
-	echo "Hypervisor detected: $result1. Install Hyper-V guest additions."
+if [ $SYSTEMD_RESULT = microsoft ]; then
+	echo "Hypervisor detected: $SYSTEMD_RESULT. Install Hyper-V guest additions."
 	apt-get install -y hyperv-daemons || true
 	update-initramfs -u -k all || true
 fi
+fi
+
+#Check if / use BTRFS as default filesystem to install kaisen-btrfs-snapshots
+CHECK_ROOTFS=$(grep -v -E "^(#|$)" /etc/fstab | head -1 | awk '{ print $2 $3 }')
+RESULT_ROOTFS=$(echo $CHECK_ROOTFS)
+
+if [ $RESULT_ROOTFS = /btrfs ]; then
+	echo "BTRFS use for /. Install snapshots tools."
+	apt-get install -y kaisen-btrfs-snapshots || true
+else
+	echo "BTRFS not use for /. Snapshots tools are not installed."
 fi
 
 #Disable services
@@ -239,8 +250,3 @@ fi
 #Repositories in HTTPS
 sed -i 's/deb http:\/\/deb.kaisenlinux.org\//deb https:\/\/deb.kaisenlinux.org/g' /etc/apt/sources.list
 sed -i 's/deb-src http:\/\/deb.kaisenlinux.org\//deb-src https:\/\/deb.kaisenlinux.org/g' /etc/apt/sources.list
-
-#Remove all snapshots taken by apt-btrfs-snapshot
-if [ -e /usr/bin/apt-btrfs-snapshot ] && [ -x /usr/bin/apt-btrfs-snapshot ]; then
-apt-btrfs-snapshot delete-older-than 0d || true
-fi

@@ -85,5 +85,5 @@ krb5-config krb5-config/default_realm string
 macchanger macchanger/automatically_run boolean false
 firmware-ipw2x00 firmware-ipw2x00/license/accepted boolean true
 firmware-ivtv firmware-ivtv/license/accepted boolean true
-kaisen-kde shared/default-x-display-manager string lightdm
+lightdm shared/default-x-display-manager string lightdm
 virtualbox-ext-pack virtualbox-ext-pack/license boolean true

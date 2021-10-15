@@ -1,3 +1,11 @@
+simple-cdd (0.6.8+kaisen12) kaisen-packages; urgency=medium
+
+  * Change kaisen-kde by lightdm in preseed to fix
+    kaisen-kde no installable from other interfaces with
+    kaisen-interface switcher
+
+ -- Kevin Chevreuil - Kaisen <kaisen@kaisenlinux.org>  Fri, 15 Oct 2021 04:32:34 +0200
+
 simple-cdd (0.6.8+kaisen11) kaisen-packages; urgency=medium
 
   * Improve BTRFS check if use on /

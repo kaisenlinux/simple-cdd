@@ -126,6 +126,8 @@ else
 	systemctl stop ip6tables || true
 	systemctl disable netfilter-persistent || true
 	systemctl stop netfilter-persistent || true
+	systemctl disable nftables || true
+	systemctl stop nftables || true
 	systemctl disable gns3-server || true
 	systemctl stop gns3-server || true
 	systemctl disable hddtemp || true

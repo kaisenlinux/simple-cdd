@@ -5,29 +5,24 @@ if [ -e /usr/bin/systemd-detect-virt ] && [ -x /usr/bin/systemd-detect-virt ]; t
 
 SYSTEMD_CHECK=$(systemd-detect-virt || true)
 SYS_CHECK=$(cat /sys/class/dmi/id/sys_vendor | cut -d' ' -f1)
-SYSTEMD_RESULT=$(echo $check1)
-SYS_RESULT=$(echo $check2)
 
-if [ $SYSTEMD_RESULT = vmware ]; then
-	echo "Hypervisor detected: $SYSTEMD_RESULT. Install VMWare guest additions."
+if [ $SYSTEMD_CHECK = vmware ]; then
+	echo "Hypervisor detected: $SYSTEMD_CHECK. Install VMWare guest additions."
 	apt-get install -y open-vm-tools open-vm-tools-desktop || true
 	update-initramfs -u -k all || true
-fi
 
-if [ $SYS_RESULT = innotek ]; then
-	echo "Hypervisor detected: $SYS_RESULT (VirtualBox). Install all VirtualBox guest additions."
-	apt-get install -y virtualbox-guest-dkms virtualbox-guest-source virtualbox-guest-utils virtualbox-guest-x11 || true
+elif [ $SYS_CHECK = innotek ]; then
+	echo "Hypervisor detected: $SYS_CHECK (VirtualBox). Install all VirtualBox guest additions."
+	apt-get install -y virtualbox-guest-utils virtualbox-guest-x11 || true
 	update-initramfs -u -k all || true
-fi
 
-if [ $SYS_RESULT = QEMU ]; then
-	echo "Hypervisor detected: $SYS_RESULT. Install all QEMU guest additions."
+elif [ $SYS_CHECK = QEMU ]; then
+	echo "Hypervisor detected: $SYS_CHECK. Install all QEMU guest additions."
 	apt-get install -y xserver-xorg-video-qxl qemu-guest-agent spice-vdagent spice-webdavd || true
 	update-initramfs -u -k all || true
-fi
 
-if [ $SYSTEMD_RESULT = microsoft ]; then
-	echo "Hypervisor detected: $SYSTEMD_RESULT. Install Hyper-V guest additions."
+elif [ $SYSTEMD_CHECK = microsoft ]; then
+	echo "Hypervisor detected: $SYSTEMD_CHECK. Install Hyper-V guest additions."
 	apt-get install -y hyperv-daemons || true
 	update-initramfs -u -k all || true
 fi
@@ -35,9 +30,8 @@ fi
 
 #Check if / use BTRFS as default filesystem to install kaisen-btrfs-snapshots
 CHECK_ROOTFS=$(grep -v -E "^(#|$)" /etc/fstab | grep -v /bin | grep -v /boot | grep -v /etc | grep -v /home | grep -v /lib | grep -v /media | grep -v /mnt | grep -v /opt | grep -v /root | grep -v /run | grep -v /sbin | grep -v /srv | grep -v /tmp | grep -v /usr | grep -v /var | grep -o btrfs || true)
-RESULT_ROOTFS=$(echo $CHECK_ROOTFS)
 
-if [ $RESULT_ROOTFS = btrfs ]; then
+if [ $CHECK_ROOTFS = btrfs ]; then
 	echo "BTRFS use for /. Install snapshots tools."
 	apt-get install -y kaisen-btrfs-snapshots || true
 else
@@ -248,7 +242,3 @@ if [ -e /usr/lib/modules/[0-9]*.[0-9]*.[0-9]*-kaisen[0-9]*-amd64/updates/vboxdrv
         echo "vboxdrv" > /etc/modules-load.d/virtualbox.conf
         echo "Done."
 fi
-
-#Repositories in HTTPS
-sed -i 's/deb http:\/\/deb.kaisenlinux.org\//deb https:\/\/deb.kaisenlinux.org/g' /etc/apt/sources.list
-sed -i 's/deb-src http:\/\/deb.kaisenlinux.org\//deb-src https:\/\/deb.kaisenlinux.org/g' /etc/apt/sources.list

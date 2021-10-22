@@ -1,3 +1,14 @@
+simple-cdd (0.6.8+kaisen14) kaisen-packages; urgency=medium
+
+  * Remove SYSTEMD_RESULT and SYS_RESULT variables
+  * Fix = unexpected operator
+  * Remove virtualbox-guest-dkms and virtualbox-guest-source as packages
+    to install
+  * Remove RESULT_ROOTFS
+  * Remove sed script (repositories are by default in HTTPS)
+
+ -- Kevin Chevreuil - Kaisen <kaisen@kaisenlinux.org>  Fri, 22 Oct 2021 13:54:34 +0200
+
 simple-cdd (0.6.8+kaisen13) kaisen-packages; urgency=medium
 
   * Add nftables service in postinst script

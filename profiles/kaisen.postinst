@@ -31,7 +31,7 @@ fi
 #Check if / use BTRFS as default filesystem to install kaisen-btrfs-snapshots
 CHECK_ROOTFS=$(grep -v -E "^(#|$)" /etc/fstab | grep -v /bin | grep -v /boot | grep -v /etc | grep -v /home | grep -v /lib | grep -v /media | grep -v /mnt | grep -v /opt | grep -v /root | grep -v /run | grep -v /sbin | grep -v /srv | grep -v /tmp | grep -v /usr | grep -v /var | grep -o btrfs || true)
 
-if [ $CHECK_ROOTFS = btrfs ]; then
+if [ $CHECK_ROOTFS = btrfs 2> /dev/null ]; then
 	echo "BTRFS use for /. Install snapshots tools."
 	apt-get install -y kaisen-btrfs-snapshots || true
 else

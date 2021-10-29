@@ -4,3 +4,6 @@ tasksel-data
 
 # BTRFS support
 btrfs-progs
+
+# cryptsetup-initramfs is necessary for installation with cryptsetup
+cryptsetup-initramfs

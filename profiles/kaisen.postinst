@@ -9,22 +9,18 @@ SYS_CHECK=$(cat /sys/class/dmi/id/sys_vendor | cut -d' ' -f1)
 if [ $SYSTEMD_CHECK = vmware ]; then
 	echo "Hypervisor detected: $SYSTEMD_CHECK. Install VMWare guest additions."
 	apt-get install -y open-vm-tools open-vm-tools-desktop || true
-	update-initramfs -u -k all || true
 
 elif [ $SYS_CHECK = innotek ]; then
 	echo "Hypervisor detected: $SYS_CHECK (VirtualBox). Install all VirtualBox guest additions."
 	apt-get install -y virtualbox-guest-utils virtualbox-guest-x11 || true
-	update-initramfs -u -k all || true
 
 elif [ $SYS_CHECK = QEMU ]; then
 	echo "Hypervisor detected: $SYS_CHECK. Install all QEMU guest additions."
 	apt-get install -y xserver-xorg-video-qxl qemu-guest-agent spice-vdagent spice-webdavd || true
-	update-initramfs -u -k all || true
 
 elif [ $SYSTEMD_CHECK = microsoft ]; then
 	echo "Hypervisor detected: $SYSTEMD_CHECK. Install Hyper-V guest additions."
 	apt-get install -y hyperv-daemons || true
-	update-initramfs -u -k all || true
 fi
 fi
 

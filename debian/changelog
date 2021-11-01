@@ -1,3 +1,10 @@
+simple-cdd (0.6.8+kaisen17) kaisen-packages; urgency=medium
+
+  * Add define bash as default shell if lightdm not installed
+  * Add echo to log actions made by kaisen.postinst
+
+ -- Kevin Chevreuil - Kaisen <kaisen@kaisenlinux.org>  Mon, 01 Nov 2021 22:48:43 +0200
+
 simple-cdd (0.6.8+kaisen16) kaisen-packages; urgency=medium
 
   * Remove rebuild of initramfs in kaisen.postinst (Virtualbox

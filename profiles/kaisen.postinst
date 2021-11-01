@@ -35,6 +35,7 @@ else
 fi
 
 #Disable services
+echo "Disable additionals daemons installed by kaisen packages..."
 if [ -e /opt/services/all-services-disable ] && [ -x /opt/services/all-services-disable ]; then
         /opt/services/all-services-disable
 else
@@ -230,6 +231,7 @@ else
 	systemctl stop podman-auto-update || true
 	systemctl disable podman.socket || true
 	systemctl stop podman.socket || true
+echo "All additionals services was disabled."
 fi
 
 #Autoload virtualbox modules
@@ -237,4 +239,13 @@ if [ -e /usr/lib/modules/[0-9]*.[0-9]*.[0-9]*-kaisen[0-9]*-amd64/updates/vboxdrv
         echo "Adding vboxdrv module at boot..."
         echo "vboxdrv" > /etc/modules-load.d/virtualbox.conf
         echo "Done."
+fi
+
+#Define bash as default shell if lightdm not installed
+if [ ! -e /usr/sbin/lightdm ] && [ ! -x /usr/sbin/lightdm ]; then
+	echo "Lightdm not installed. Define bash as default shell..."
+        for users in $(awk -F: '/\/home/ {printf "%s:%s\n",$1,$3}' /etc/passwd | cut -d: -f1)
+        do
+        chsh -s /bin/bash $users
+        done
 fi

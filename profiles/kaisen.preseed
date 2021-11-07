@@ -79,8 +79,6 @@ d-i finish-install/reboot_in_progress note
 iptables-persistent iptables-persistent/autosave_v4 boolean false
 iptables-persistent iptables-persistent/autosave_v6 boolean false
 wireshark-common wireshark-common/install-setuid boolean false
-kismet kismet/install-setuid boolean false
-kismet kismet/install-users string
 krb5-config krb5-config/default_realm string
 macchanger macchanger/automatically_run boolean false
 firmware-ipw2x00 firmware-ipw2x00/license/accepted boolean true

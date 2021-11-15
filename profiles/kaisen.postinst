@@ -32,7 +32,7 @@ if [ $CHECK_ROOTFS = btrfs 2> /dev/null ] && [ $CHECK_SUBVOL = "subvol=@" 2> /de
 	echo "BTRFS is the filesystem use for / partition, and the / partition is mount in a subvolume. Install snapshots tools."
 	apt-get install -y kaisen-btrfs-snapshots || true
 else
-	echo "BTRFS is not use for / partition. Snapshots tools are not installed."
+	echo "BTRFS is not use for / partition or the / partition not mount in a subvolume. Snapshots tools are not installed."
 fi
 
 #Disable services

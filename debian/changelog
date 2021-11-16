@@ -1,3 +1,9 @@
+simple-cdd (0.6.8+kaisen21) kaisen-packages; urgency=medium
+
+  * Add vboxnetadp and vboxnetflt modules to be launched at startup
+
+ -- Kevin Chevreuil - Kaisen <kaisen@kaisenlinux.org>  Tue, 16 Nov 2021 21:21:03 +0200
+
 simple-cdd (0.6.8+kaisen20) kaisen-packages; urgency=medium
 
   * Update BTRFS echo message

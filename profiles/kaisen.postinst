@@ -236,9 +236,11 @@ echo "All additionals services was disabled."
 fi
 
 #Autoload virtualbox modules
-if [ -e /usr/lib/modules/[0-9]*.[0-9]*.[0-9]*-kaisen[0-9]*-amd64/updates/vboxdrv.ko ] && [ -e /var/lib/dkms/virtualbox/[0-9]*.[0-9]*.[0-9]*/[0-9]*.[0-9]*.[0-9]*-kaisen[0-9]*-amd64/x86_64/module/vboxdrv.ko ]; then
-        echo "Adding vboxdrv module at boot..."
+if [ -e /usr/lib/modules/[0-9]*.[0-9]*.[0-9]*-kaisen[0-9]*-amd64/updates/vboxdrv.ko ] && [ -e /var/lib/dkms/virtualbox/[0-9]*.[0-9]*.[0-9]*/[0-9]*.[0-9]*.[0-9]*-kaisen[0-9]*-amd64/x86_64/module/vboxdrv.ko ] && [ -e /usr/lib/modules/[0-9]*.[0-9]*.[0-9]*-kaisen[0-9]*-amd64/updates/vboxnetadp.ko ] && [ -e /var/lib/dkms/virtualbox/[0-9]*.[0-9]*.[0-9]*/[0-9]*.[0-9]*.[0-9]*-kaisen[0-9]*-amd64/x86_64/module/vboxnetadp.ko ] && [ -e /usr/lib/modules/[0-9]*.[0-9]*.[0-9]*-kaisen[0-9]*-amd64/updates/vboxnetflt.ko ] && [ -e /var/lib/dkms/virtualbox/[0-9]*.[0-9]*.[0-9]*/[0-9]*.[0-9]*.[0-9]*-kaisen[0-9]*-amd64/x86_64/module/vboxnetflt.ko ]; then
+        echo "Adding Virtualbox modules at boot..."
         echo "vboxdrv" > /etc/modules-load.d/virtualbox.conf
+	echo "vboxnetadp" >> /etc/modules-load.d/virtualbox.conf
+        echo "vboxnetflt" >> /etc/modules-load.d/virtualbox.conf
         echo "Done."
 fi
 

@@ -26,13 +26,14 @@ fi
 
 #Check if / use BTRFS as default filesystem to install kaisen-btrfs-snapshots
 CHECK_ROOTFS=$(grep -v -E "^(#|$)" /etc/fstab | grep -v /bin | grep -v /boot | grep -v /etc | grep -v /home | grep -v /lib | grep -v /media | grep -v /mnt | grep -v /opt | grep -v /root | grep -v /run | grep -v /sbin | grep -v /srv | grep -v /tmp | grep -v /usr | grep -v /var | grep -o btrfs || true)
-CHECK_SUBVOL=$(grep -v -E "^(#|$)" /etc/fstab | grep -v /bin | grep -v /boot | grep -v /etc | grep -v /home | grep -v /lib | grep -v /media | grep -v /mnt | grep -v /opt | grep -v /root | grep -v /run | grep -v /sbin | grep -v /srv | grep -v /tmp | grep -v /usr | grep -v /var | grep -o subvol=@ || true)
+CHECK_FSTAB=$(grep -v -E "^(#|$)" /etc/fstab | grep -v /bin | grep -v /boot | grep -v /etc | grep -v /home | grep -v /lib | grep -v /media | grep -v /mnt | grep -v /opt | grep -v /root | grep -v /run | grep -v /sbin | grep -v /srv | grep -v /tmp | grep -v /usr | grep -v /var | grep -o subvol=@ || true)
+CHECK_SUBVOL=$(btrfs subvolume list / | grep -o @ || true)
 
-if [ $CHECK_ROOTFS = btrfs 2> /dev/null ] && [ $CHECK_SUBVOL = "subvol=@" 2> /dev/null ]; then
-	echo "BTRFS is the filesystem use for / partition, and the / partition is mount in a subvolume. Install snapshots tools."
+if [ $CHECK_ROOTFS = btrfs 2> /dev/null ] && [ $CHECK_FSTAB = "subvol=@" 2> /dev/null ] && [ $CHECK_SUBVOL = @ 2> /dev/null ]; then
+	echo "BTRFS is the filesystem use for / partition, and the / partition is mount in the @ subvolume. Install snapshots tools."
 	apt-get install -y kaisen-btrfs-snapshots || true
 else
-	echo "BTRFS is not use for / partition or the / partition not mount in a subvolume. Snapshots tools are not installed."
+	echo "BTRFS is not use for / partition or the / partition is not mount in the @ subvolume. Snapshots tools are not installed."
 fi
 
 #Disable services

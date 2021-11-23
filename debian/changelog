@@ -1,3 +1,9 @@
+simple-cdd (0.6.8+kaisen24) kaisen-packages; urgency=medium
+
+  * Add 2> /dev/null for btrfs subvolume command
+
+ -- Kevin Chevreuil - Kaisen <kaisen@kaisenlinux.org>  Tue, 23 Nov 2021 22:23:27 +0200
+
 simple-cdd (0.6.8+kaisen23) kaisen-packages; urgency=medium
 
   * Add 2> /dev/null for subvolume check

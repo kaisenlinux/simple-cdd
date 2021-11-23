@@ -27,7 +27,7 @@ fi
 #Check if / use BTRFS as default filesystem to install kaisen-btrfs-snapshots
 CHECK_ROOTFS=$(grep -v -E "^(#|$)" /etc/fstab | grep -v /bin | grep -v /boot | grep -v /etc | grep -v /home | grep -v /lib | grep -v /media | grep -v /mnt | grep -v /opt | grep -v /root | grep -v /run | grep -v /sbin | grep -v /srv | grep -v /tmp | grep -v /usr | grep -v /var | grep -o btrfs || true)
 CHECK_FSTAB=$(grep -v -E "^(#|$)" /etc/fstab | grep -v /bin | grep -v /boot | grep -v /etc | grep -v /home | grep -v /lib | grep -v /media | grep -v /mnt | grep -v /opt | grep -v /root | grep -v /run | grep -v /sbin | grep -v /srv | grep -v /tmp | grep -v /usr | grep -v /var | grep -o subvol=@ || true)
-CHECK_SUBVOL=$(btrfs subvolume list / | grep -o @ 2> /dev/null || true)
+CHECK_SUBVOL=$(btrfs subvolume list / 2> /dev/null | grep -o @ 2> /dev/null || true)
 
 if [ $CHECK_ROOTFS = btrfs 2> /dev/null ] && [ $CHECK_FSTAB = "subvol=@" 2> /dev/null ] && [ $CHECK_SUBVOL = @ 2> /dev/null ]; then
 	echo "BTRFS is the filesystem use for / partition, and the / partition is mount in the @ subvolume. Install snapshots tools."

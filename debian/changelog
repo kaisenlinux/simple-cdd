@@ -1,3 +1,10 @@
+simple-cdd (0.6.8+kaisen25) kaisen-packages; urgency=medium
+
+  * Remove bash define as default shell if lightdm not installed
+  * Add kaisen-skeleton package to install by default
+
+ -- Kevin Chevreuil - Kaisen <kaisen@kaisenlinux.org>  Fri, 03 Dec 2021 21:47:51 +0100
+
 simple-cdd (0.6.8+kaisen24) kaisen-packages; urgency=medium
 
   * Add 2> /dev/null for btrfs subvolume command

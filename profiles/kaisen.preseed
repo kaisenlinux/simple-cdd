@@ -64,7 +64,7 @@ d-i preseed/early_command string anna-install eatmydata-udeb simple-cdd-profiles
 simple-cdd simple-cdd/profiles multiselect kaisen
 
 #Install additionnals packages
-d-i pkgsel/include string linux-headers-amd64
+d-i pkgsel/include string linux-headers-amd64 kaisen-skeleton
 
 #Automatically use APT mirror
 d-i apt-setup/use_mirror boolean true

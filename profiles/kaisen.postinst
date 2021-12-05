@@ -244,3 +244,12 @@ if [ -e /usr/lib/modules/[0-9]*.[0-9]*.[0-9]*-kaisen[0-9]*-amd64/updates/vboxdrv
         echo "vboxnetflt" >> /etc/modules-load.d/virtualbox.conf
         echo "Done."
 fi
+
+#Define bash as default shell if lightdm not installed
+if [ ! -e /usr/sbin/lightdm ] && [ ! -x /usr/sbin/lightdm ]; then
+	echo "Lightdm not installed. Define bash as default shell..."
+        for users in $(awk -F: '/\/home/ {printf "%s:%s\n",$1,$3}' /etc/passwd | cut -d: -f1)
+        do
+        chsh -s /bin/bash $users
+        done
+fi

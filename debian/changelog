@@ -1,3 +1,10 @@
+simple-cdd (0.6.8+kaisen27) kaisen-packages; urgency=medium
+
+  * Delete the addition of virtualbox modules
+  * Add nmbd and smbd services
+
+ -- Kevin Chevreuil - Kaisen <kaisen@kaisenlinux.org>  Thu, 30 Dec 2021 05:23:09 +0100
+
 simple-cdd (0.6.8+kaisen26) kaisen-packages; urgency=medium
 
   * Readd bash define as default shell if lightdm not installed

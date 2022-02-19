@@ -1,3 +1,10 @@
+simple-cdd (0.6.8+kaisen28) kaisen-packages; urgency=medium
+
+  * Remove the part of the script to define bash as default shell if lightdm
+    ins't installed
+
+ -- Kevin Chevreuil - Kaisen <kaisen@kaisenlinux.org>  Fri, 18 Feb 2022 14:47:41 +0100
+
 simple-cdd (0.6.8+kaisen27) kaisen-packages; urgency=medium
 
   * Delete the addition of virtualbox modules

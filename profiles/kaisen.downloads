@@ -7,3 +7,7 @@ btrfs-progs
 
 # cryptsetup-initramfs is necessary for installation with cryptsetup
 cryptsetup-initramfs
+
+# zsh and bash-completion will be installed by debootstrap
+zsh
+bash-completion

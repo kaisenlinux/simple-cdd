@@ -1,3 +1,9 @@
+simple-cdd (0.6.8+kaisen29) kaisen-packages; urgency=medium
+
+  * Add zsh and bash-completion in profiles/kaisen.downloads
+
+ -- Kevin Chevreuil - Kaisen <kaisen@kaisenlinux.org>  Mon, 21 Feb 2022 04:15:51 +0100
+
 simple-cdd (0.6.8+kaisen28) kaisen-packages; urgency=medium
 
   * Remove the part of the script to define bash as default shell if lightdm

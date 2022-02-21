@@ -57,6 +57,9 @@ d-i partman/default_filesystem string btrfs
 #Do not activate volume wipe during encryption
 d-i partman-auto-crypto/erase_disks boolean false
 
+#Disable warning when no swap partition was created
+d-i partman-basicfilesystems/no_swap boolean false
+
 #Activate eatmydata to reduce space disk used and download simple-cdd profiles
 d-i preseed/early_command string anna-install eatmydata-udeb simple-cdd-profiles
 

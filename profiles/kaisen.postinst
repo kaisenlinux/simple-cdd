@@ -84,7 +84,6 @@ else
 	systemctl disable gns3-server || true
 	systemctl disable hddtemp || true
 	systemctl disable hostapd || true
-	systemctl disable irqbalance || true
 	systemctl disable libvirtd.service || true
 	systemctl disable virtlockd.socket || true
 	systemctl disable virtlogd.socket || true

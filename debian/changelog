@@ -1,3 +1,9 @@
+simple-cdd (0.6.8+kaisen31) kaisen-packages; urgency=medium
+
+  * Remove irqbalance disable (this package now not installed by default)
+
+ -- Kevin Chevreuil - Kaisen <kaisen@kaisenlinux.org>  Fri, 22 Feb 2022 20:27:12 +0100
+
 simple-cdd (0.6.8+kaisen30) kaisen-packages; urgency=medium
 
   * Disable warning when no swap partition was created

@@ -1,3 +1,9 @@
+simple-cdd (0.6.8+kaisen33) kaisen-packages; urgency=medium
+
+  * Add puppet services scripts
+
+ -- Kevin Chevreuil - Kaisen <kaisen@kaisenlinux.org>  Thu, 10 Mar 2022 03:29:43 +0100
+
 simple-cdd (0.6.8+kaisen32) kaisen-packages; urgency=medium
 
   * Add nfs-blkmap service

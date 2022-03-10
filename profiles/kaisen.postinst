@@ -139,5 +139,8 @@ else
 	systemctl disable podman.socket || true
 	systemctl disable nmbd || true
 	systemctl disable smbd || true
+	systemctl disable puppet || true
+	systemctl disable pxp-agent || true
+
 echo "All additionals services was disabled."
 fi

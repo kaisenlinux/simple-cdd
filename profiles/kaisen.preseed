@@ -83,6 +83,8 @@ iptables-persistent iptables-persistent/autosave_v4 boolean false
 iptables-persistent iptables-persistent/autosave_v6 boolean false
 wireshark-common wireshark-common/install-setuid boolean false
 krb5-config krb5-config/default_realm string
+krb5-config krb5-config/kerberos_servers string
+krb5-config krb5-config/admin_server string
 macchanger macchanger/automatically_run boolean false
 firmware-ipw2x00 firmware-ipw2x00/license/accepted boolean true
 firmware-ivtv firmware-ivtv/license/accepted boolean true

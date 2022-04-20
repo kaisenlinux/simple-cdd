@@ -1,3 +1,10 @@
+simple-cdd (0.6.8+kaisen35) kaisen-packages; urgency=medium
+
+  * Automatically enable force UEFI installation
+  * Add inclusion of packages in the base system with the preseed file
+
+ -- Kevin Chevreuil - Kaisen <kaisen@kaisenlinux.org>  Thu, 21 Apr 2022 01:15:44 +0100
+
 simple-cdd (0.6.8+kaisen34) kaisen-packages; urgency=medium
 
   * Add new default responses for krb5-config

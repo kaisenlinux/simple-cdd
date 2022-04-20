@@ -1,5 +1,4 @@
-# Default repository information (don't include codename data, d-i figures it
-# out from what's available in the ISO)
+#Default repository information (don't include codename data, d-i figures it out from what's available in the ISO)
 d-i mirror/protocol string https
 d-i mirror/country string FR    
 d-i mirror/https/hostname string deb.kaisenlinux.org
@@ -8,48 +7,54 @@ d-i mirror/https/directory string /
 d-i mirror/suite string kaisen-rolling
 d-i mirror/udeb/suite string kaisen-rolling
 
-# Force define kaisenlinux as default hostname (priority on DHCP)
+#Force define kaisenlinux as default hostname (priority on DHCP)
 d-i netcfg/hostname string kaisenlinux
 
-# Disable missing firmware message during network configuration
+#Disable missing firmware message during network configuration
 d-i hw-detect/load_firmware boolean false
 
-# Disable security, updates and backports
+#Disable security, updates and backports
 d-i apt-setup/services-select multiselect
 
-# Enable contrib and non-free
+#Enable contrib and non-free
 d-i apt-setup/non-free boolean true
 d-i apt-setup/contrib boolean true
 
-# Disable CDROM entries after install
+#Disable CDROM entries after install
 d-i apt-setup/disable-cdrom-entries boolean true
 
-# Upgrade installed packages (debootstrap)
+#Include packages in the base system
+d-i base-installer/includes string bash-completion zsh ca-certificates kaisen-archive-keyring
+
+#Upgrade installed packages (debootstrap)
 d-i pkgsel/upgrade select full-upgrade
 
-# Disable question about automatic security updates
+#Disable question about automatic security updates
 d-i pkgsel/update-policy select none
 
-# Disable popularity-contest
+#Disable popularity-contest
 popularity-contest popularity-contest/participate boolean false
 
-# Disable question about extra media
+#Disable question about extra media
 d-i apt-setup/cdrom/set-first boolean false
 
-# Install default linux-image-amd64 kernel metapackage
+#Install default linux-image-amd64 kernel metapackage
 d-i base-installer/kernel/image string linux-image-amd64
 
-# Do not ask to create a root password to force the creation of a user with reduced privileges
+#Do not ask to create a root password to force the creation of a user with reduced privileges
 d-i passwd/root-login boolean false
 
-# Controls whether or not the hardware clock is set to UTC.
+#Controls whether or not the hardware clock is set to UTC.
 d-i clock-setup/utc boolean false
 
-# Controls whether to use NTP to set the clock during the install
+#Controls whether to use NTP to set the clock during the install
 d-i clock-setup/ntp boolean true
 
-# NTP server to use
+#NTP server to use
 d-i clock-setup/ntp-server string 0.debian.pool.ntp.org
+
+#Automatically enable force UEFI installation
+d-i partman-efi/non_efi_system boolean true
 
 #Define default filesystem
 d-i partman/default_filesystem string btrfs

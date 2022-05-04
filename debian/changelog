@@ -1,3 +1,9 @@
+simple-cdd (0.6.8+kaisen37) kaisen-packages; urgency=medium
+
+  * ntpsec* services are disabled by default
+
+ -- Kevin Chevreuil - Kaisen <kaisen@kaisenlinux.org>  Wed, 04 May 2022 23:23:47 +0100
+
 simple-cdd (0.6.8+kaisen36) kaisen-packages; urgency=medium
 
   * Really display kaisenlinux instead of debian as default hostname

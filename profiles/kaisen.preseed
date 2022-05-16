@@ -10,6 +10,7 @@ d-i mirror/udeb/suite string kaisen-rolling
 #Force define kaisenlinux as default hostname (priority on DHCP)
 d-i netcfg/hostname string kaisenlinux
 d-i netcfg/get_hostname string kaisenlinux
+d-i netcfg/get_hostname seen false
 
 #Disable missing firmware message during network configuration
 d-i hw-detect/load_firmware boolean false

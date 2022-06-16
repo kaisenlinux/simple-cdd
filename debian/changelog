@@ -1,3 +1,9 @@
+simple-cdd (0.6.8+kaisen39) kaisen-packages; urgency=medium
+
+  * Add vault service disable in the postinst script
+
+ -- Kevin Chevreuil - Kaisen <kaisen@kaisenlinux.org>  Thu, 16 Jun 2022 05:12:46 +0100
+
 simple-cdd (0.6.8+kaisen38) kaisen-packages; urgency=medium
 
   * Allow host name change during system installation

@@ -97,3 +97,4 @@ firmware-ipw2x00 firmware-ipw2x00/license/accepted boolean true
 firmware-ivtv firmware-ivtv/license/accepted boolean true
 lightdm shared/default-x-display-manager string lightdm
 virtualbox-ext-pack virtualbox-ext-pack/license boolean true
+iperf3 iperf3/start_daemon boolean false

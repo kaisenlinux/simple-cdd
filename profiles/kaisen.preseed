@@ -98,3 +98,5 @@ firmware-ivtv firmware-ivtv/license/accepted boolean true
 lightdm shared/default-x-display-manager string lightdm
 virtualbox-ext-pack virtualbox-ext-pack/license boolean true
 iperf3 iperf3/start_daemon boolean false
+encfs encfs/security-information boolean true
+encfs encfs/security-information seen true

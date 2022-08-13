@@ -1,3 +1,9 @@
+simple-cdd (0.6.8+kaisen41) kaisen-packages; urgency=medium
+
+  * Disable the encfs message
+
+ -- Kevin Chevreuil - Kaisen <kaisen@kaisenlinux.org>  Sat, 13 Aug 2022 03:59:16 +0100
+
 simple-cdd (0.6.8+kaisen40) kaisen-packages; urgency=medium
 
   * Add iperf3 default debconf settings

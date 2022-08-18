@@ -1,3 +1,10 @@
+simple-cdd (0.6.8+kaisen42) kaisen-packages; urgency=medium
+
+  * Add usr-is-merged package to downloads (required by debootstrap)
+  * Fix typo in the kaisen.preseed file
+
+ -- Kevin Chevreuil - Kaisen <kaisen@kaisenlinux.org>  Wed, 17 Aug 2022 03:05:49 +0100
+
 simple-cdd (0.6.8+kaisen41) kaisen-packages; urgency=medium
 
   * Disable the encfs message

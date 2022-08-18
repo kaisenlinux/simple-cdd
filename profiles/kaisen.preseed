@@ -1,6 +1,6 @@
 #Default repository information (don't include codename data, d-i figures it out from what's available in the ISO)
 d-i mirror/protocol string https
-d-i mirror/country string FR    
+d-i mirror/https/countries string FR
 d-i mirror/https/hostname string deb.kaisenlinux.org
 d-i mirror/https/mirror string deb.kaisenlinux.org
 d-i mirror/https/directory string /

@@ -110,14 +110,7 @@ else
 	systemctl disable portmap || true
 	systemctl disable rpcbind || true
 	systemctl disable rpcbind.socket || true
-	systemctl disable ntp || true
-	systemctl disable ntpd || true
-	systemctl disable ntpsec || true
-	systemctl disable ntpsec-rotate-stats || true
-	systemctl disable ntpsec-rotate-stats.timer || true
-	systemctl disable ntpsec-systemd-netif || true
-	systemctl disable ntpsec-systemd-netif.path || true
-	systemctl disable ntpsec-wait || true
+	systemctl disable chrony || true
 	systemctl disable o2cb || true
 	systemctl disable ocfs2 || true
 	systemctl disable openvpn || true

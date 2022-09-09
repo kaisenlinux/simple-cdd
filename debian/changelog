@@ -1,3 +1,9 @@
+simple-cdd (0.6.8+kaisen44) kaisen-packages; urgency=medium
+
+  * Replace NTP by chrony in the kaisen.postinst script
+
+ -- Kevin Chevreuil - Kaisen <kaisen@kaisenlinux.org>  Fri, 09 Sep 2022 12:57:47 +0100
+
 simple-cdd (0.6.8+kaisen43) kaisen-packages; urgency=medium
 
   * Remove debconf preseed for firmwares

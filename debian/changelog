@@ -1,3 +1,13 @@
+simple-cdd (0.6.8+kaisen45) kaisen-packages; urgency=medium
+
+  * Add the installation of the following guest additions packages:
+    - open-vm-tools-containerinfo
+    - open-vm-tools-salt-minion
+    - open-vm-tools-sdmp
+  * Add the created user to the vboxsf and the vboxusers groups if they exists
+
+ -- Kevin Chevreuil - Kaisen <kaisen@kaisenlinux.org>  Sun, 11 Sep 2022 02:28:11 +0100
+
 simple-cdd (0.6.8+kaisen44) kaisen-packages; urgency=medium
 
   * Replace NTP by chrony in the kaisen.postinst script

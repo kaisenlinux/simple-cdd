@@ -26,7 +26,7 @@ fi
 
 #Add the created user to the vboxusers group if it exists
 VBOXUSERS_GROUP=$(grep -o vboxusers /etc/group || true)
-if [ $VBOXUSERS_GROUP = vboxusers ]; then
+if [ $VBOXUSERS_GROUP = vboxusers 2> /dev/null ]; then
 	echo "The vboxusers group exist. Adding the created user in this group..."
         for user in $(awk -F: '/\/home/ {printf "%s:%s\n",$1,$3}' /etc/passwd | cut -d: -f1)
         do
@@ -37,7 +37,7 @@ fi
 
 #Add the created user to the vboxsf group if it exists
 VBOXSF_GROUP=$(grep -o vboxsf /etc/group || true)
-if [ $VBOXSF_GROUP = vboxsf ]; then
+if [ $VBOXSF_GROUP = vboxsf 2> /dev/null ]; then
 	echo "The vboxsf group exist. Adding the created user in this group..."
         for user in $(awk -F: '/\/home/ {printf "%s:%s\n",$1,$3}' /etc/passwd | cut -d: -f1)
         do

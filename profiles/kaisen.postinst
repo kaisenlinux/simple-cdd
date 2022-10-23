@@ -1,7 +1,7 @@
 #!/bin/sh
 
 #Install complete guests for all hypervisors
-if [ -e /usr/bin/systemd-detect-virt ] && [ -x /usr/bin/systemd-detect-virt ]; then
+if [ -x /usr/bin/systemd-detect-virt ]; then
 
 SYSTEMD_CHECK=$(systemd-detect-virt || true)
 SYS_CHECK=$(cat /sys/class/dmi/id/sys_vendor | cut -d' ' -f1)
@@ -9,14 +9,17 @@ SYS_CHECK=$(cat /sys/class/dmi/id/sys_vendor | cut -d' ' -f1)
 if [ $SYSTEMD_CHECK = vmware ]; then
 	echo "Hypervisor detected: $SYSTEMD_CHECK. Install VMWare guest additions."
 	apt-get install -y open-vm-tools open-vm-tools-desktop open-vm-tools-containerinfo open-vm-tools-salt-minion open-vm-tools-sdmp || true
+	systemctl enable open-vm-tools vgauth
 
 elif [ $SYS_CHECK = innotek ]; then
 	echo "Hypervisor detected: $SYS_CHECK (VirtualBox). Install all VirtualBox guest additions."
 	apt-get install -y virtualbox-guest-utils virtualbox-guest-x11 || true
+	systemctl enable virtualbox-guest-utils
 
 elif [ $SYS_CHECK = QEMU ]; then
 	echo "Hypervisor detected: $SYS_CHECK. Install all QEMU guest additions."
 	apt-get install -y xserver-xorg-video-qxl qemu-guest-agent spice-vdagent spice-webdavd || true
+	systemctl enable spice-vdagentd.service spice-vdagentd.socket spice-webdavd.service
 
 elif [ $SYSTEMD_CHECK = microsoft ]; then
 	echo "Hypervisor detected: $SYSTEMD_CHECK. Install Hyper-V guest additions."
@@ -60,8 +63,8 @@ fi
 
 #Disable services
 echo "Disable additionals daemons installed by kaisen packages..."
-if [ -e /opt/services/all-services-disable ] && [ -x /opt/services/all-services-disable ]; then
-        /opt/services/all-services-disable
+if [ -x /usr/share/kaisen-services-management/all-services-disable ]; then
+        /usr/share/kaisen-services-management/all-services-disable
 else
 	systemctl disable 2ping || true
 	systemctl disable arpalert || true
@@ -70,100 +73,112 @@ else
 	systemctl disable bacula-fd || true
 	systemctl disable bacula-sd || true
 	systemctl disable bettercap || true
-	systemctl disable bluetooth || true
 	systemctl disable blueman-mechanism || true
-	systemctl disable btrbk.timer || true
+	systemctl disable bluetooth || true
 	systemctl disable btrbk.service || true
+	systemctl disable btrbk.timer || true
 	systemctl disable btrfs-balance.service || true
 	systemctl disable btrfs-balance.timer || true
 	systemctl disable btrfs-defrag.service || true
 	systemctl disable btrfs-defrag.timer || true
 	systemctl disable btrfsmaintenance-refresh.path || true
 	systemctl disable btrfsmaintenance-refresh.service || true
-	systemctl disable btrfs-scrub.timer || true
 	systemctl disable btrfs-scrub.service || true
-	systemctl disable btrfs-trim.timer || true
+	systemctl disable btrfs-scrub.timer || true
 	systemctl disable btrfs-trim.service || true
+	systemctl disable btrfs-trim.timer || true
 	systemctl disable ceph-fuse.target || true
+	systemctl disable chrony || true
 	systemctl disable clamav-daemon || true
 	systemctl disable clamav-freshclam || true
 	systemctl disable clamav-milter || true
 	systemctl disable containerd || true
 	systemctl disable cups-browsed || true
-	systemctl disable cups || true
 	systemctl disable cups.path || true
 	systemctl disable cups.socket || true
+	systemctl disable cups || true
 	systemctl disable darkstat || true
-	systemctl disable docker || true
 	systemctl disable docker.socket || true
-	systemctl disable e2scrub_reap || true
+	systemctl disable docker || true
 	systemctl disable e2scrub_all.timer || true
+	systemctl disable e2scrub_reap || true
 	systemctl disable etc-setserial || true
-	systemctl disable iptables || true
-	systemctl disable ip6tables || true
-	systemctl disable netfilter-persistent || true
-	systemctl disable nftables || true
+	systemctl disable fio || true
 	systemctl disable gns3-server || true
 	systemctl disable hddtemp || true
-	systemctl disable hostapd || true
-	systemctl disable libvirtd.service || true
-	systemctl disable virtlockd.socket || true
-	systemctl disable virtlogd.socket || true
-	systemctl disable libvirtd.socket || true
-	systemctl disable libvirtd-ro.socket || true
-	systemctl disable libvirt-guests.service || true
+	systemctl disable ip6tables || true
+	systemctl disable iptables || true
 	systemctl disable libvirtd-admin.socket || true
-	systemctl disable virtlockd-admin.socket || true
-	systemctl disable virtlogd-admin.socket || true
-	systemctl disable spice-vdagentd.service || true
-	systemctl disable spice-vdagentd.socket || true
-	systemctl disable spice-webdavd.service || true
+	systemctl disable libvirtd-ro.socket || true
+	systemctl disable libvirtd.service || true
+	systemctl disable libvirtd.socket || true
+	systemctl disable libvirtd-tcp.socket || true
+	systemctl disable libvirtd-tls.socket || true
+	systemctl disable libvirt-guests.service || true
 	systemctl disable lm-sensors || true
 	systemctl disable lxcfs || true
+	systemctl disable lxc-monitord.service || true
 	systemctl disable lxc-net || true
 	systemctl disable lxc || true
-	systemctl disable mlocate.timer || true
-	systemctl disable mlocate.service || true
 	systemctl disable neo4j || true
+	systemctl disable netfilter-persistent || true
+	systemctl disable nfs-blkmap.service || true
 	systemctl disable nfs-client.target || true
+	systemctl disable nfs-common.service || true
+	systemctl disable nfsdcld.service || true
+	systemctl disable nfs-idmapd.service || true
 	systemctl disable nfs-kernel-server || true
-	systemctl disable nfs-blkmap || true
-	systemctl disable nfs-server || true
-	systemctl disable portmap || true
-	systemctl disable rpcbind || true
-	systemctl disable rpcbind.socket || true
-	systemctl disable chrony || true
+	systemctl disable nfs-mountd.service || true
+	systemctl disable nfs-server.service || true
+	systemctl disable nfs-utils.service || true
+	systemctl disable nftables || true
+	systemctl disable nmbd || true
 	systemctl disable o2cb || true
 	systemctl disable ocfs2 || true
 	systemctl disable openvpn || true
-	systemctl disable rpcbind || true
+	systemctl disable plocate-updatedb.service || true
+	systemctl disable plocate-updatedb.timer || true
+	systemctl disable podman-auto-update.service || true
+	systemctl disable podman-auto-update.timer || true
+	systemctl disable podman-restart.service || true
+	systemctl disable podman.service || true
+	systemctl disable podman.socket || true
+	systemctl disable portmap || true
+	systemctl disable puppet-agent || true
+	systemctl disable rpcbind.service || true
 	systemctl disable rpcbind.socket || true
+	systemctl disable rpcbind.target || true
+	systemctl disable rpc-gssd.service || true
+	systemctl disable rpc_pipefs.target || true
+	systemctl disable rpc-statd-notify.service || true
+	systemctl disable rpc-statd.service || true
+	systemctl disable rpc-svcgssd.service || true
 	systemctl disable rsync || true
+	systemctl disable samba-ad-dc.service || true
 	systemctl disable setserial || true
 	systemctl disable smartmontools || true
-	systemctl disable snapper-boot.timer || true
-	systemctl disable snapper-boot.service || true
-	systemctl disable snapper-cleanup.timer || true
-	systemctl disable snapper-cleanup.service || true
-	systemctl disable snapperd || true
-	systemctl disable snapper-timeline.timer || true
-	systemctl disable snapper-timeline.service || true
-	systemctl disable ssh || true
-	systemctl disable sysstat || true
-	systemctl disable vboxweb || true
-	systemctl disable virtualbox || true
-	systemctl disable virtualbox-guest-utils || true
-	systemctl disable vgauth || true
-	systemctl disable open-vm-tools || true
-	systemctl disable zfs-fuse || true
-	systemctl disable podman || true
-	systemctl disable podman-auto-update || true
-	systemctl disable podman.socket || true
-	systemctl disable nmbd || true
 	systemctl disable smbd || true
-	systemctl disable puppet || true
-	systemctl disable pxp-agent || true
+	systemctl disable snapper-boot.service || true
+	systemctl disable snapper-boot.timer || true
+	systemctl disable snapper-cleanup.service || true
+	systemctl disable snapper-cleanup.timer || true
+	systemctl disable snapperd || true
+	systemctl disable snapper-timeline.service || true
+	systemctl disable snapper-timeline.timer || true
+	systemctl disable ssh || true
+	systemctl disable sysstat-collect.service || true
+	systemctl disable sysstat-collect.timer || true
+	systemctl disable sysstat || true
+	systemctl disable sysstat-summary.service || true
+	systemctl disable sysstat-summary.timer || true
 	systemctl disable vault || true
+	systemctl disable virtlockd-admin.socket || true
+	systemctl disable virtlockd.service || true
+	systemctl disable virtlockd.socket || true
+	systemctl disable virtlogd-admin.socket || true
+	systemctl disable virtlogd.service || true
+	systemctl disable virtlogd.socket || true
+	systemctl disable zfs-fuse || true
 
-echo "All additionals services was disabled."
+	echo "All additionals services were disabled."
 fi

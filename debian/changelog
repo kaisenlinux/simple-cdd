@@ -1,3 +1,29 @@
+simple-cdd (0.6.8+kaisen47) kaisen-packages; urgency=medium
+
+  * Force the enabling of guests additions daemons
+  * No disable the following services:
+    - spice-vdagentd.service
+    - spice-vdagentd.socket
+    - spice-webdavd.service
+    - vboxweb
+    - virtualbox
+    - virtualbox-guest-utils
+    - vgauth
+    - open-vm-tools
+    - qemu-guest-agent
+  * Remove pxp-agent service (no installed)
+  * Rename puppet in puppet-agent
+  * Replace mlocate units files by plocate units files
+  * Fix the bad path for the all-services-disable script
+  * Sort and typo
+  * Remove the hostapd service
+  * Add new sysstat unit files
+  * Add new nfs unit files
+  * Add lxc-monitord.service
+  * Add fio.service
+
+ -- Kevin Chevreuil - Kaisen <kaisen@kaisenlinux.org>  Sun, 23 Oct 2022 18:35:57 +0100
+
 simple-cdd (0.6.8+kaisen46) kaisen-packages; urgency=medium
 
   * Add 2> /dev/null for no display unknown operand for vboxsf and vboxusers

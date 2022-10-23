@@ -19,7 +19,7 @@ elif [ $SYS_CHECK = innotek ]; then
 elif [ $SYS_CHECK = QEMU ]; then
 	echo "Hypervisor detected: $SYS_CHECK. Install all QEMU guest additions."
 	apt-get install -y xserver-xorg-video-qxl qemu-guest-agent spice-vdagent spice-webdavd || true
-	systemctl enable spice-vdagentd.service spice-vdagentd.socket spice-webdavd.service
+	systemctl enable spice-vdagentd.service spice-vdagentd.socket spice-webdavd.service qemu-guest-agent.service
 
 elif [ $SYSTEMD_CHECK = microsoft ]; then
 	echo "Hypervisor detected: $SYSTEMD_CHECK. Install Hyper-V guest additions."

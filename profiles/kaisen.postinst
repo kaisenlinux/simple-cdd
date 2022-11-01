@@ -145,6 +145,7 @@ else
 	systemctl disable podman.socket || true
 	systemctl disable portmap || true
 	systemctl disable puppet-agent || true
+	systemctl disable pxp-agent || true
 	systemctl disable rpcbind.service || true
 	systemctl disable rpcbind.socket || true
 	systemctl disable rpcbind.target || true

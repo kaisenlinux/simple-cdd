@@ -1,8 +1,9 @@
 simple-cdd (0.6.8+kaisen48) kaisen-packages; urgency=medium
 
   * Readd the pxp-agent service
+  * Rename the puppet-agent service in puppet
 
- -- Kevin Chevreuil - Kaisen <kaisen@kaisenlinux.org>  Tue, 01 Nov 2022 22:37:16 +0100
+ -- Kevin Chevreuil - Kaisen <kaisen@kaisenlinux.org>  Tue, 01 Nov 2022 23:49:13 +0100
 
 simple-cdd (0.6.8+kaisen47) kaisen-packages; urgency=medium
 

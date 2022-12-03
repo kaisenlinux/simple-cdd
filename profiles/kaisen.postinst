@@ -185,3 +185,9 @@ else
 
 	echo "All additionals services were disabled."
 fi
+
+#Update the files database for the plocate command
+if command -v updatedb &> /dev/null
+then
+        updatedb
+fi

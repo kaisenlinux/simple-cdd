@@ -1,3 +1,10 @@
+simple-cdd (0.6.8+kaisen53) kaisen-packages; urgency=medium
+
+  * Add the user created in the docker and gns3 groups
+  * Improve the kaisen.postinst script
+
+ -- Kevin Chevreuil - Kaisen <kaisen@kaisenlinux.org>  Mon, 30 Jan 2023 21:29:27 +0100
+
 simple-cdd (0.6.8+kaisen52) kaisen-packages; urgency=medium
 
   * Add the /home for the BTRFS quotas activation

@@ -28,8 +28,7 @@ fi
 fi
 
 #Add the created user to the vboxusers group if it exists
-VBOXUSERS_GROUP=$(grep -o vboxusers /etc/group || true)
-if [ $VBOXUSERS_GROUP = vboxusers 2> /dev/null ]; then
+if getent group vboxusers >/dev/null 2>&1 ; then
 	echo "The vboxusers group exist. Adding the created user in this group..."
         for user in $(awk -F: '/\/home/ {printf "%s:%s\n",$1,$3}' /etc/passwd | cut -d: -f1)
         do
@@ -39,14 +38,33 @@ if [ $VBOXUSERS_GROUP = vboxusers 2> /dev/null ]; then
 fi
 
 #Add the created user to the vboxsf group if it exists
-VBOXSF_GROUP=$(grep -o vboxsf /etc/group || true)
-if [ $VBOXSF_GROUP = vboxsf 2> /dev/null ]; then
+if getent group vboxsf >/dev/null 2>&1 ; then
 	echo "The vboxsf group exist. Adding the created user in this group..."
         for user in $(awk -F: '/\/home/ {printf "%s:%s\n",$1,$3}' /etc/passwd | cut -d: -f1)
         do
                 usermod -a -G vboxsf "$user" || true
         done
 	echo "Done"
+fi
+
+#Add the created user to the gns3 group if it exists
+if getent group gns3 >/dev/null 2>&1 ; then
+        echo "The gns3 group exist. Adding the created user in this group..."
+        for user in $(awk -F: '/\/home/ {printf "%s:%s\n",$1,$3}' /etc/passwd | cut -d: -f1)
+        do
+                usermod -a -G gns3 "$user" || true
+        done
+        echo "Done"
+fi
+
+#Add the created user to the vboxsf group if it exists
+if getent group docker >/dev/null 2>&1 ; then
+        echo "The docker group exist. Adding the created user in this group..."
+        for user in $(awk -F: '/\/home/ {printf "%s:%s\n",$1,$3}' /etc/passwd | cut -d: -f1)
+        do
+                usermod -a -G docker "$user" || true
+        done
+        echo "Done"
 fi
 
 #Check if / use BTRFS as default filesystem to install kaisen-btrfs-snapshots

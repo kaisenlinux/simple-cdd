@@ -1,3 +1,31 @@
+simple-cdd (0.6.9+kaisen1) kaisen-packages; urgency=medium
+
+  * Import the new upstream release
+  * Add LXD daemons in the kaisen.postinst script
+  * Add the created user to the libvirt group
+
+ -- Kevin Chevreuil - Kaisen <kaisen@kaisenlinux.org>  Fri, 10 Mar 2023 16:48:23 +0100
+
+simple-cdd (0.6.9) unstable; urgency=medium
+
+  [ Vagrant Cascadian ]
+  * Consistently use log.warning(). Thanks to Marc Haber. (Closes: #988515)
+
+  [ Raphaël Hertzog ]
+  * Include cryptsetup-initramfs in default.downloads
+
+  [ Debian Janitor ]
+  * Remove constraints unnecessary since buster
+
+  [ Arnaud Rebillout ]
+  * Include usr-is-merged in default.downloads
+  * Add installer-i386 to the local mirror for amd64 builds
+  * Double reprepro_retries's default value, log if it's reached
+    (Closes: #1030287)
+  * Add myself as uploader
+
+ -- Arnaud Rebillout <arnaudr@kali.org>  Mon, 06 Feb 2023 12:10:35 +0700
+
 simple-cdd (0.6.8+kaisen53) kaisen-packages; urgency=medium
 
   * Add the user created in the docker and gns3 groups

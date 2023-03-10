@@ -120,7 +120,7 @@ class ToolMirrorDownload(Tool):
                     elif file.endswith("MD5SUMS"):
                         hashtype = "MD5Sum"
                     else:
-                        log.warn("Unknown hash type for %s, skipping file", file)
+                        log.warning("Unknown hash type for %s, skipping file", file)
                         continue
 
                     separator = os.path.join('dists/', env.get("DI_CODENAME"), '')

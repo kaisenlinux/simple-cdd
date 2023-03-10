@@ -57,12 +57,22 @@ if getent group gns3 >/dev/null 2>&1 ; then
         echo "Done"
 fi
 
-#Add the created user to the vboxsf group if it exists
+#Add the created user to the docker group if it exists
 if getent group docker >/dev/null 2>&1 ; then
         echo "The docker group exist. Adding the created user in this group..."
         for user in $(awk -F: '/\/home/ {printf "%s:%s\n",$1,$3}' /etc/passwd | cut -d: -f1)
         do
                 usermod -a -G docker "$user" || true
+        done
+        echo "Done"
+fi
+
+#Add the created user to the libvirt group if it exists
+if getent group libvirt >/dev/null 2>&1 ; then
+        echo "The libvirt group exist. Adding the created user in this group..."
+        for user in $(awk -F: '/\/home/ {printf "%s:%s\n",$1,$3}' /etc/passwd | cut -d: -f1)
+        do
+                usermod -a -G libvirt "$user" || true
         done
         echo "Done"
 fi
@@ -141,6 +151,10 @@ else
 	systemctl disable lxc-monitord.service || true
 	systemctl disable lxc-net || true
 	systemctl disable lxc || true
+	systemctl disable lxd-agent.service || true
+	systemctl disable lxd.socket || true
+	systemctl disable lxd.service || true
+	systemctl disable lxd-containers.service || true
 	systemctl disable neo4j || true
 	systemctl disable netfilter-persistent || true
 	systemctl disable nfs-blkmap.service || true

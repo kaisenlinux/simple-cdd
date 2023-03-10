@@ -1,7 +1,7 @@
 conf=$MIRROR/conf
 
 # attempt to resolve dependencies
-test -z "$reprepro_retries" && reprepro_retries="20"
+test -z "$reprepro_retries" && reprepro_retries="40"
 package_lists=""
 for a in $ARCHES ; do
     for component in $mirror_components ; do
@@ -51,7 +51,6 @@ for i in $(seq $reprepro_retries); do
     done | sort -u > $conf/package-list
 
     if diff -q $conf/package-list $conf/package-list.old ; then
-        echo "no new dependencies, finished in $i attempts."
         break
     else
         echo "getting missing dependencies... attempt $i"
@@ -62,3 +61,13 @@ for i in $(seq $reprepro_retries); do
         fi
     fi
 done
+
+if diff -q $conf/package-list $conf/package-list.old ; then
+    echo "no new dependencies, finished in $i attempts."
+else
+    echo "dependencies still missing after $i attempts."
+    echo "it could be that some dependencies are not satisfiable,"
+    echo "or that more iterations are needed. if later steps fail"
+    echo "due to missing dependencies, consider raising the value"
+    echo "reprepro_retries in your configuration."
+fi

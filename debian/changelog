@@ -3,6 +3,7 @@ simple-cdd (0.6.9+kaisen1) kaisen-packages; urgency=medium
   * Import the new upstream release
   * Add LXD daemons in the kaisen.postinst script
   * Add the created user to the libvirt group
+  * Add the support of the non-free-firmware area
 
  -- Kevin Chevreuil - Kaisen <kaisen@kaisenlinux.org>  Fri, 10 Mar 2023 16:48:23 +0100
 

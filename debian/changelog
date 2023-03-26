@@ -1,6 +1,14 @@
+simple-cdd (0.6.8+kaisen54) kaisen-packages; urgency=medium
+
+  * Add LXD daemons in the kaisen.postinst
+  * Add the created user in the libvirt group
+  * Add the support the non-free area
+
+ -- Kevin Chevreuil - Kaisen <kaisen@kaisenlinux.org>  Sun, 26 Mar 2023 15:29:21 +0100
+
 simple-cdd (0.6.8+kaisen53) kaisen-packages; urgency=medium
 
-  * Add the user created in the docker and gns3 groups
+  * Add the created user in the docker and gns3 groups
   * Improve the kaisen.postinst script
 
  -- Kevin Chevreuil - Kaisen <kaisen@kaisenlinux.org>  Mon, 30 Jan 2023 21:29:27 +0100

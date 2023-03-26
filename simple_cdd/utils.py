@@ -150,7 +150,7 @@ def list_debs(file_or_dir):
                 if not wanted.search(f): continue
                 yield os.path.join(root, f)
     else:
-        log.warning("local package source %s is neither a file nor a directory", file_or_dir)
+        log.warn("local package source %s is neither a file nor a directory", file_or_dir)
 
 
 class Checksums:

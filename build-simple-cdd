@@ -173,7 +173,7 @@ class SimpleCDD:
         if not verify_release_keys:
             for keyring_file in self.env.get("keyring"):
                 if not os.path.exists(keyring_file):
-                    log.warning("keyring file %s does not exist", keyring_file)
+                    log.warn("keyring file %s does not exist", keyring_file)
                     continue
 
                 verify_release_keys.extend(gnupg.list_valid_keys(keyring_file))
@@ -194,7 +194,7 @@ class SimpleCDD:
         for p in self.env.get("preseed_files"):
             if verify_preseed_file(p): continue
             if self.args.force_preseed:
-                log.warning("preseed file invalid: %s", p)
+                log.warn("preseed file invalid: %s", p)
             else:
                 raise Fail("preseed file invalid: %s", p)
 
@@ -264,7 +264,7 @@ class SimpleCDD:
                     elif a in ("amd64", "arm64", "sparc64") or a.startswith("powerpc") or a.startswith("s390"):
                         self.env.append("kernel_packages", kernel_base + a)
                     else:
-                        log.warning("unable to guess kernel for architecture: {}", a)
+                        log.warn("unable to guess kernel for architecture: {}", a)
 
         self.env.append("all_packages", self.env.get("kernel_packages"))
 
@@ -285,11 +285,6 @@ class SimpleCDD:
                         self.env.set("di_match_files", ".")
                     self.env.append("checksum_files",
                                     os.path.join("dists", self.env.format("{DI_CODENAME}/main/installer-{a}/{di_release}/images/{checksum_file_type}", a=a)))
-                    # For amd64 builds: debian-cd (>= 3.1.36) needs the i386 installer images,
-                    # cf. https://salsa.debian.org/images-team/debian-cd/-/commit/8a8e6238.
-                    if a == "amd64" and "i386" not in self.env.get("ARCHES"):
-                        self.env.append("checksum_files",
-                                        os.path.join("dists", self.env.format("{DI_CODENAME}/main/installer-{a}/{di_release}/images/{checksum_file_type}", a="i386")))
             # run mirroring hooks
             for tool in self.env.get("mirror_tools"):
                 self.run_tool("mirror", tool)
@@ -482,7 +477,7 @@ class SimpleCDD:
             if packagetype == 'required':
                 log.error("%s", msg)
             else:
-                log.warning("%s", msg)
+                log.warn("%s", msg)
 
         has_missing_packages = False
         for profile in profiles:
@@ -622,7 +617,7 @@ class SimpleCDD:
                     output.seek(0)
                     for line in output:
                         if not line.startswith("stdout:"): continue
-                        log.warning("distcheck: %s", line[7:].rstrip())
+                        log.warn("distcheck: %s", line[7:].rstrip())
 
     def build_distribution(self):
         """

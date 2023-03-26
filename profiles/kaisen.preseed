@@ -18,8 +18,7 @@ d-i hw-detect/load_firmware boolean false
 #Disable security, updates and backports
 d-i apt-setup/services-select multiselect
 
-#Enable contrib, non-free and non-free-firmware
-d-i apt-setup/non-free-firmware boolean true
+#Enable contrib and non-free
 d-i apt-setup/non-free boolean true
 d-i apt-setup/contrib boolean true
 

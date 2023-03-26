@@ -279,7 +279,7 @@ class ToolMirrorReprepro(ToolShell):
                         cmd.extend(["--ignore=wrongdistribution", "includeudeb", di_codename, f])
                         retval = run_command("reprepro: including local deb file", cmd, env=reprepro_env)
                 else:
-                    log.warning("unknown package type: %s", f)
+                    log.warn("unknown package type: %s", f)
 
         # Update package lists
         cmd = ["reprepro"]
@@ -345,9 +345,9 @@ class ToolMirrorReprepro(ToolShell):
                 stdout, stderr = proc.communicate()
                 retval = proc.wait()
                 if retval != 0:
-                    log.warning("Found uninstallable packages in %s:", pkgfile)
+                    log.warn("Found uninstallable packages in %s:", pkgfile)
                     for line in stdout.decode("utf-8").split("\n"):
-                        log.warning("  %s", line)
+                        log.warn("  %s", line)
 
 
 

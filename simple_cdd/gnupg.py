@@ -24,7 +24,7 @@ class Gnupg:
         # Import all keyrings into our gnupg home
         for keyring_file in self.env.get("keyring"):
             if not os.path.exists(keyring_file):
-                log.warning("keyring file %s does not exist", keyring_file)
+                log.warn("keyring file %s does not exist", keyring_file)
                 continue
             self.import_keyring(keyring_file)
 

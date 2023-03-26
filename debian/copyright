@@ -1,6 +1,6 @@
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
-Source: https://salsa.debian.org/debian/simple-cdd
 Upstream-Name: Simple-CDD
+Source: https://anonscm.debian.org/git/collab-maint/simple-cdd.git
 
 Files: *
 Copyright: 2004-2018 Vagrant Cascadian <vagrant@debian.org>

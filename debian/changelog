@@ -1,3 +1,9 @@
+simple-cdd (0.6.8+kaisen55) kaisen-packages; urgency=medium
+
+  * Delete LXQT when it's not selected in tasksel
+
+ -- Kevin Chevreuil - Kaisen <kaisen@kaisenlinux.org>  Mon, 27 Mar 2023 00:24:02 +0100
+
 simple-cdd (0.6.8+kaisen54) kaisen-packages; urgency=medium
 
   * Add LXD daemons in the kaisen.postinst

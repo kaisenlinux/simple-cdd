@@ -219,6 +219,21 @@ else
 	echo "All additionals services were disabled."
 fi
 
+#Remove LXQT packages when only kaisen-mate is installed
+if [ `dpkg -l | grep kaisen-mate | awk '{ print $2 }'` = "kaisen-mate" 2> /dev/null ] && [ "`dpkg-query -W --showformat='${Status}\n' kaisen-lxqt`" = "unknown ok not-installed" 2> /dev/null ]; then
+        dpkg -l | grep lxqt | awk '{ print $2 }' | xargs apt-get autoremove --purge -y
+fi
+
+#Remove LXQT packages when only kaisen-kde is installed
+if [ `dpkg -l | grep kaisen-kde | awk '{ print $2 }'` = "kaisen-kde" 2> /dev/null ] && [ "`dpkg-query -W --showformat='${Status}\n' kaisen-lxqt`" = "unknown ok not-installed" 2> /dev/null ]; then
+        dpkg -l | grep lxqt | awk '{ print $2 }' | xargs apt-get autoremove --purge -y
+fi
+
+#Remove LXQT packages when only kaisen-xfce is installed
+if [ `dpkg -l | grep kaisen-xfce | awk '{ print $2 }'` = "kaisen-xfce" 2> /dev/null ] && [ "`dpkg-query -W --showformat='${Status}\n' kaisen-lxqt`" = "unknown ok not-installed" 2> /dev/null ]; then
+        dpkg -l | grep lxqt | awk '{ print $2 }' | xargs apt-get autoremove --purge -y
+fi
+
 #Update the files database for the plocate command
 if command -v updatedb &> /dev/null
 then

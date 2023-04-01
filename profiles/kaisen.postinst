@@ -86,8 +86,8 @@ if [ $CHECK_ROOTFS = btrfs 2> /dev/null ] && [ $CHECK_FSTAB = "subvol=@" 2> /dev
 	echo "BTRFS is the filesystem use for / partition, and the / partition is mount in the @ subvolume. Install snapshots tools."
 	apt-get install -y kaisen-btrfs-snapshots || true
 	#Force the activation of BTRFS quota
-	btrfs quota disable /
-	btrfs quota disable /home
+	btrfs quota enable /
+	btrfs quota enable /home
 else
 	echo "BTRFS is not use for / partition or the / partition is not mount in the @ subvolume. Snapshots tools are not installed."
 fi

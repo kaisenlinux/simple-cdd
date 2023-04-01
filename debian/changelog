@@ -1,3 +1,9 @@
+simple-cdd (0.6.8+kaisen56) kaisen-packages; urgency=medium
+
+  * Force the deactivation of BTRFS quotas
+
+ -- Kevin Chevreuil - Kaisen <kaisen@kaisenlinux.org>  Sat, 01 Apr 2023 15:48:42 +0100
+
 simple-cdd (0.6.8+kaisen55) kaisen-packages; urgency=medium
 
   * Delete LXQT when it's not selected in tasksel

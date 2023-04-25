@@ -1,3 +1,9 @@
+simple-cdd (0.6.8+kaisen57) kaisen-packages; urgency=medium
+
+  * Force the ejection of the CDROM after the installation
+
+ -- Kevin Chevreuil - Kaisen <kaisen@kaisenlinux.org>  Tue, 25 Apr 2023 23:42:04 +0100
+
 simple-cdd (0.6.8+kaisen56) kaisen-packages; urgency=medium
 
   * Force the deactivation of BTRFS quotas

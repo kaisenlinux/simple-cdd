@@ -1,3 +1,10 @@
+simple-cdd (0.6.8+kaisen58) kaisen-packages; urgency=medium
+
+  * Force the ejection of the CDROM after the installation in the postinst script
+  * Remove the ejection of the CDROM in the preseed file
+
+ -- Kevin Chevreuil - Kaisen <kaisen@kaisenlinux.org>  Sun, 30 Apr 2023 15:42:19 +0100
+
 simple-cdd (0.6.8+kaisen57) kaisen-packages; urgency=medium
 
   * Force the ejection of the CDROM after the installation

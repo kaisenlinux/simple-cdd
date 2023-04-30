@@ -77,8 +77,8 @@ simple-cdd simple-cdd/profiles multiselect kaisen
 #Automatically use APT mirror
 d-i apt-setup/use_mirror boolean true
 
-#Force the ejection of the CDROM after the installation
-d-i cdrom-detect/eject boolean true
+#Don't eject the CDROM before the end of the installation
+d-i cdrom-detect/eject boolean false
 
 #Delete the message at end installation and automatic reboot after finish install
 d-i finish-install/reboot_in_progress note

@@ -239,3 +239,7 @@ if command -v updatedb &> /dev/null
 then
         updatedb
 fi
+
+#Force the ejection of the CDROM after the installation
+CDROM=$(mount | grep "on /cdrom" | cut -d ' ' -f 1)
+eject -F $CDROM 2> /dev/null || true

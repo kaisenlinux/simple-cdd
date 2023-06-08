@@ -208,6 +208,7 @@ else
 	systemctl disable sysstat-summary.service || true
 	systemctl disable sysstat-summary.timer || true
 	systemctl disable vault || true
+	systemctl disable tftpd-hpa || true
 	systemctl disable virtlockd-admin.socket || true
 	systemctl disable virtlockd.service || true
 	systemctl disable virtlockd.socket || true

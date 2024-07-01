@@ -2,7 +2,7 @@ simple-cdd (0.6.8+kaisen61) kaisen-packages; urgency=medium
 
   * Fix locales aren't well-defined
 
- -- Kevin Chevreuil - Kaisen <kaisen@kaisenlinux.org>  Mon, 01 Jul 2024 23:19:22 +0100
+ -- Kevin Chevreuil - Kaisen <kaisen@kaisenlinux.org>  Tue, 02 Jul 2024 01:48:39 +0100
 
 simple-cdd (0.6.8+kaisen60) kaisen-packages; urgency=medium
 

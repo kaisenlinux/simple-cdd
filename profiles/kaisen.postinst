@@ -241,3 +241,10 @@ then
 	echo "Run the updatedb command to update the database for plocate..."
         updatedb
 fi
+
+#Ensure that locales are well-defined
+if command -v locale-gen &> /dev/null
+then
+	echo "Ensure that locales are well-defined"
+	locale-gen
+fi

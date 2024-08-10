@@ -15,6 +15,7 @@ eject
 lvm2
 mdadm
 cryptsetup
+cryptsetup-initramfs
 
 # to support reiserfs, JFS and XFS filesystems
 reiserfsprogs
@@ -23,6 +24,8 @@ xfsprogs
 
 # debian-cd uses debootstrap from the mirror
 debootstrap
+# debootstrap >= 1.0.127 requires usr-is-merged for suites >= bookworm
+usr-is-merged
 
 # initramfs-tools recommends busybox, and we don't yet support recommends
 busybox

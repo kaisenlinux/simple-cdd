@@ -10,7 +10,7 @@ Build-Depends: debhelper-compat (= 13),
  python3-setuptools,
  dh-python,
  help2man,
-Standards-Version: 4.6.0
+Standards-Version: 4.5.1
 Rules-Requires-Root: no
 Vcs-Git: https://gitlab.com/kaisenlinux/packages/simple-cdd.git
 Vcs-Browser: https://gitlab.com/kaisenlinux/packages/simple-cdd
@@ -19,7 +19,7 @@ Package: simple-cdd
 Architecture: all
 Depends: ${misc:Depends},
  rsync,
- debian-cd (>= 3.1.15),
+ debian-cd,
  reprepro,
  wget,
  lsb-release,

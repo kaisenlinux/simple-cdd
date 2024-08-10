@@ -1,3 +1,29 @@
+simple-cdd (0.6.9+kaisen1) kaisen-packages; urgency=medium
+
+  * Import the new 0.6.9 release
+
+ -- Kevin Chevreuil - Kaisen <kaisen@kaisenlinux.org>  Wed, 07 Aug 2024 20:34:27 +0200
+
+simple-cdd (0.6.9) unstable; urgency=medium
+
+  [ Vagrant Cascadian ]
+  * Consistently use log.warning(). Thanks to Marc Haber. (Closes: #988515)
+
+  [ Raphaël Hertzog ]
+  * Include cryptsetup-initramfs in default.downloads
+
+  [ Debian Janitor ]
+  * Remove constraints unnecessary since buster
+
+  [ Arnaud Rebillout ]
+  * Include usr-is-merged in default.downloads
+  * Add installer-i386 to the local mirror for amd64 builds
+  * Double reprepro_retries's default value, log if it's reached
+    (Closes: #1030287)
+  * Add myself as uploader
+
+ -- Arnaud Rebillout <arnaudr@kali.org>  Mon, 06 Feb 2023 12:10:35 +0700
+
 simple-cdd (0.6.8+kaisen61) kaisen-packages; urgency=medium
 
   * Fix locales aren't well-defined

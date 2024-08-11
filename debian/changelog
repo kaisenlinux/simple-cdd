@@ -1,8 +1,9 @@
 simple-cdd (0.6.9+kaisen1) kaisen-packages; urgency=medium
 
   * Import the new 0.6.9 release
+  * Reimport modifications into the default profile
 
- -- Kevin Chevreuil - Kaisen <kaisen@kaisenlinux.org>  Wed, 07 Aug 2024 20:34:27 +0200
+ -- Kevin Chevreuil - Kaisen <kaisen@kaisenlinux.org>  Sun, 11 Aug 2024 05:20:51 +0200
 
 simple-cdd (0.6.9) unstable; urgency=medium
 

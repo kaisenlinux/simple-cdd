@@ -99,3 +99,4 @@ virtualbox-ext-pack virtualbox-ext-pack/license boolean true
 iperf3 iperf3/start_daemon boolean false
 encfs encfs/security-information boolean true
 encfs encfs/security-information seen true
+zfs-dkms zfs-dkms/note-incompatible-licenses seen true

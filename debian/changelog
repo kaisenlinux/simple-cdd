@@ -1,3 +1,9 @@
+simple-cdd (0.6.9+kaisen2) kaisen-packages; urgency=medium
+
+  * Set the seen flag to true for the zfs-dkms package
+
+ -- Kevin Chevreuil - Kaisen <kaisen@kaisenlinux.org>  Mon, 18 Nov 2024 20:51:12 +0200
+
 simple-cdd (0.6.9+kaisen1) kaisen-packages; urgency=medium
 
   * Import the new 0.6.9 release

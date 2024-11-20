@@ -170,6 +170,7 @@ else
 	systemctl disable nmbd || true
 	systemctl disable o2cb || true
 	systemctl disable ocfs2 || true
+	systemctl disable openbao || true
 	systemctl disable openvpn || true
 	systemctl disable plocate-updatedb.service || true
 	systemctl disable plocate-updatedb.timer || true
@@ -215,7 +216,11 @@ else
 	systemctl disable virtlogd-admin.socket || true
 	systemctl disable virtlogd.service || true
 	systemctl disable virtlogd.socket || true
-	systemctl disable zfs-fuse || true
+	systemctl disable zfs-load-module.service || true
+	systemctl disable zfs-mount.service || true
+	systemctl disable zfs-share.service || true
+	systemctl disable zfs-volume-wait.service || true
+	systemctl disable zfs-zed.service || true
 
 	echo "All additionals services were disabled."
 fi

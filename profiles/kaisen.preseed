@@ -94,9 +94,9 @@ krb5-config krb5-config/default_realm string
 krb5-config krb5-config/kerberos_servers string
 krb5-config krb5-config/admin_server string
 macchanger macchanger/automatically_run boolean false
-lightdm shared/default-x-display-manager string lightdm
 virtualbox-ext-pack virtualbox-ext-pack/license boolean true
 iperf3 iperf3/start_daemon boolean false
 encfs encfs/security-information boolean true
 encfs encfs/security-information seen true
+zfs-dkms zfs-dkms/note-incompatible-licenses boolean true
 zfs-dkms zfs-dkms/note-incompatible-licenses seen true

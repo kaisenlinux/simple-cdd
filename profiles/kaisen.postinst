@@ -268,3 +268,6 @@ then
 	LOCALE=`cat /etc/locale.gen | grep -v -E "^(#|$)" | cut -d ' ' -f1`
 	echo "LANG=$LOCALE" > /etc/locale.conf
 fi
+
+#Uninstall the kaisen-lib64 package (no longer used)
+apt-get autoremove --purge kaisen-lib64 -y

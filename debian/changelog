@@ -1,3 +1,11 @@
+simple-cdd (0.6.9+kaisen5) kaisen-packages; urgency=medium
+
+  * Remove the kaisen-lib64 package in the postinst
+  * Fix zfs-dkms defconf
+  * Remove lightdm default debconf because no longer used now
+
+ -- Kevin Chevreuil - Kaisen <kaisen@kaisenlinux.org>  Sun, 10 Aug 2025 04:01:58 +0200
+
 simple-cdd (0.6.9+kaisen4) kaisen-packages; urgency=medium
 
   * Update the services list to disable by default

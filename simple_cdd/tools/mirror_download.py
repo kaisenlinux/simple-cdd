@@ -7,6 +7,7 @@ from urllib import request
 import os
 import re
 import logging
+import base64
 
 log = logging.getLogger()
 
@@ -52,7 +53,22 @@ class ToolMirrorDownload(Tool):
                 if not os.path.isdir(os.path.dirname(output)):
                     os.makedirs(os.path.dirname(output))
                 log.debug("downloading: %s", output)
-                request.urlretrieve(url, filename=output)
+
+                log.debug("url: %s", url)
+                parsed_url = urlparse(url)
+                if parsed_url.username is not None and parsed_url.password is not None:
+                    credentials = ('%s:%s' % (parsed_url.username, parsed_url.password))
+                    encoded_credentials = base64.b64encode(credentials.encode('ascii'))
+                    auth_header = 'Basic ' + encoded_credentials.decode('ascii')
+                    opener = request.build_opener()
+                    opener.addheaders = [('Authorization', auth_header)]
+                    request.install_opener(opener)
+
+                if parsed_url.port is not None:
+                    new_url = f'{parsed_url.scheme}://{parsed_url.hostname}{parsed_url.port}{parsed_url.path}'
+                else:
+                    new_url = f'{parsed_url.scheme}://{parsed_url.hostname}{parsed_url.path}'
+                request.urlretrieve(new_url, filename=output)
                 if checksums:
                     checksums.verify_file(output, relname)
 
